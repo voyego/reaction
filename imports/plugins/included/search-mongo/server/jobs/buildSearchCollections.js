@@ -1,8 +1,8 @@
 import Logger from "@reactioncommerce/logger";
 import { Meteor } from "meteor/meteor";
 import appEvents from "/imports/node-app/core/util/appEvents";
-import { Job } from "/imports/plugins/core/job-collection/lib";
-import { Jobs, ProductSearch, Orders, OrderSearch, AccountSearch } from "/lib/collections";
+import { Job, Jobs } from "/imports/utils/jobs";
+import { ProductSearch, Orders, OrderSearch, AccountSearch } from "/lib/collections";
 import {
   buildAccountSearch,
   buildEmptyProductSearch,

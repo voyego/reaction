@@ -1,8 +1,8 @@
 import Logger from "@reactioncommerce/logger";
-import { Cart, Jobs } from "/lib/collections";
+import { Cart } from "/lib/collections";
 import appEvents from "/imports/node-app/core/util/appEvents";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
-import { Job } from "/imports/plugins/core/job-collection/lib";
+import { Job, Jobs } from "/imports/utils/jobs";
 import moment from "moment";
 
 /**
