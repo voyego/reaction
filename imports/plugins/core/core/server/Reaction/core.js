@@ -7,7 +7,7 @@ import * as Collections from "/lib/collections";
 import ConnectionDataStore from "/imports/plugins/core/core/server/util/connectionDataStore";
 import { AbsoluteUrlMixin } from "./absoluteUrl";
 import { getUserId } from "./accountUtils";
-
+import Reaction from "/imports/plugins/core/core/server/Reaction";
 /**
  * @file Server core methods
  *
@@ -623,6 +623,272 @@ export default {
       return marketplace.settings;
     }
     return {};
+  },
+
+  /**
+   * @name getUserPreferences
+   * @method
+   * @memberof Core
+   * @param  {Object} options {packageName, preference, defaultValue}
+   * @return {String|undefined} User's package preference or undefined
+   */
+  getUserPreferences(options) {
+    const { userId, packageName, preference, defaultValue } = options;
+
+    if (!userId) {
+      return undefined;
+    }
+
+    const user = AccountsCollection.findOne({ _id: userId });
+
+    if (user) {
+      const { profile } = user;
+      if (profile && profile.preferences && profile.preferences[packageName] && profile.preferences[packageName][preference]) {
+        return profile.preferences[packageName][preference];
+      }
+    }
+    return defaultValue || undefined;
+  },
+
+  /**
+   * @name setUserPreferences
+   * @method
+   * @memberof Core
+   * @summary save user preferences in the Accounts collection
+   * @param {String} packageName
+   * @param {String} preference
+   * @param {String} value
+   * @param {String} userId
+   * @return {Number} setPreferenceResult
+   */
+  setUserPreferences(packageName, preference, value, userId) {
+    const setPreferenceResult = AccountsCollection.update(userId, {
+      $set: {
+        [`profile.preferences.${packageName}.${preference}`]: value
+      }
+    });
+    return setPreferenceResult;
+  },
+
+  /**
+   * @name insertPackagesForShop
+   * @method
+   * @memberof Core
+   * @summary insert Reaction packages into Packages collection registry for a new shop
+   * - Assigns owner roles for new packages
+   * - Imports layouts from packages
+   * @param {String} shopId - the shopId to create packages for
+   * @return {String} returns insert result
+   */
+  insertPackagesForShop(shopId) {
+    const layouts = [];
+    if (!shopId) {
+      return [];
+    }
+
+    // Check to see what packages should be enabled
+    const shop = Shops.findOne({ _id: shopId });
+    const marketplaceSettings = this.getMarketplaceSettings();
+    let enabledPackages;
+
+    // Unless we have marketplace settings and an enabledPackagesByShopTypes Array
+    // we will skip this
+    if (marketplaceSettings &&
+        marketplaceSettings.shops &&
+        Array.isArray(marketplaceSettings.shops.enabledPackagesByShopTypes)) {
+      // Find the correct packages list for this shopType
+      const matchingShopType = marketplaceSettings.shops.enabledPackagesByShopTypes.find((EnabledPackagesByShopType) => EnabledPackagesByShopType.shopType === shop.shopType); // eslint-disable-line max-len
+      if (matchingShopType) {
+        ({ enabledPackages } = matchingShopType);
+      }
+    }
+
+    const packages = this.Packages;
+    // for each shop, we're loading packages in a unique registry
+    // Object.keys(pkgConfigs).forEach((pkgName) => {
+    for (const packageName in packages) {
+      // Guard to prevent unexpected `for in` behavior
+      if ({}.hasOwnProperty.call(packages, packageName)) {
+        const config = packages[packageName];
+        this.assignOwnerRoles(shopId, packageName, config.registry);
+
+        const pkg = Object.assign({}, config, {
+          shopId
+        });
+
+        // populate array of layouts that don't already exist (?!)
+        if (pkg.layout) {
+          // filter out layout templates
+          for (const template of pkg.layout) {
+            if (template && template.layout) {
+              layouts.push(template);
+            }
+          }
+        }
+
+        if (enabledPackages && Array.isArray(enabledPackages)) {
+          if (enabledPackages.indexOf(pkg.name) === -1) {
+            pkg.enabled = false;
+          } else if (pkg.settings && pkg.settings[packageName]) { // Enable "soft switch" for package.
+            pkg.settings[packageName].enabled = true;
+          }
+        }
+        Packages.insert(pkg);
+        Logger.debug(`Initializing ${shopId} ${packageName}`);
+      }
+    }
+
+    // helper for removing layout duplicates
+    const uniqLayouts = uniqWith(layouts, _.isEqual);
+    Shops.update({ _id: shopId }, { $set: { layout: uniqLayouts } });
+  },
+
+  /**
+   * @name getAppVersion
+   * @method
+   * @memberof Core
+   * @return {String} App version
+   */
+  getAppVersion() {
+    return Shops.findOne().appVersion;
+  },
+
+  /**
+   *  @name loadPackages
+   *  @method
+   *  @memberof Core
+   *  @summary Insert Reaction packages into registry
+   *  we check to see if the number of packages have changed against current data
+   *  if there is a change, we'll either insert or upsert package registry
+   *  into the Packages collection
+   *  import is processed on hook in init()
+   *  @return {String} returns insert result
+   */
+  loadPackages() {
+    const packages = Packages.find().fetch();
+
+    let registryFixtureData;
+
+    if (process.env.REACTION_REGISTRY) {
+      // check the environment for the registry fixture data first
+      registryFixtureData = process.env.REACTION_REGISTRY;
+      Logger.info("Loaded REACTION_REGISTRY environment variable for registry fixture import");
+    } else {
+      // or attempt to load reaction.json fixture data
+      try {
+        registryFixtureData = Assets.getText("settings/reaction.json");
+        Logger.info("Loaded \"/private/settings/reaction.json\" for registry fixture import");
+      } catch (error) {
+        Logger.warn("Skipped loading settings from reaction.json.");
+        Logger.debug(error, "loadSettings reaction.json not loaded.");
+      }
+    }
+
+    if (registryFixtureData) {
+      const validatedJson = EJSON.parse(registryFixtureData);
+
+      if (!Array.isArray(validatedJson[0])) {
+        Logger.warn("Registry fixture data is not an array. Failed to load.");
+      } else {
+        registryFixtureData = validatedJson;
+      }
+    }
+
+    const layouts = [];
+    const totalPackages = Object.keys(this.Packages).length;
+    let loadedIndex = 1;
+    // for each shop, we're loading packages in a unique registry
+    _.each(this.Packages, (config, pkgName) =>
+     Shops.find({_id: Reaction.getPrimaryShopId()}).forEach((shop) => {
+        const shopId = shop._id;
+        if (!shopId) return [];
+
+        // existing registry will be upserted with changes, perhaps we should add:
+        this.assignOwnerRoles(shopId, pkgName, config.registry);
+
+        // Settings from the package registry.js
+        const settingsFromPackage = {
+          name: pkgName,
+          version: config.version,
+          icon: config.icon,
+          enabled: !!config.autoEnable,
+          settings: config.settings,
+          registry: config.registry,
+          layout: config.layout
+        };
+
+        // Setting from a fixture file, most likely reaction.json
+        let settingsFromFixture;
+        if (registryFixtureData) {
+          settingsFromFixture = registryFixtureData[0].find((packageSetting) => config.name === packageSetting.name);
+        }
+
+        // Setting already imported into the packages collection
+        const settingsFromDB = packages.find((ps) => (config.name === ps.name && shopId === ps.shopId));
+
+        const combinedSettings = merge({}, settingsFromPackage, settingsFromFixture || {}, settingsFromDB || {});
+
+        // always use version from package
+        if (combinedSettings.version) {
+          combinedSettings.version = settingsFromPackage.version || settingsFromDB.version;
+        }
+        if (combinedSettings.registry) {
+          combinedSettings.registry = combinedSettings.registry.map((entry) => {
+            if (entry.provides && !Array.isArray(entry.provides)) {
+              entry.provides = [entry.provides];
+              Logger.warn(`Plugin ${combinedSettings.name} is using a deprecated version of the provides property for` +
+                          ` the ${entry.name || entry.route} registry entry. Since v1.5.0 registry provides accepts` +
+                          " an array of strings.");
+            }
+            return entry;
+          });
+        }
+
+        // populate array of layouts that don't already exist in Shops
+        if (combinedSettings.layout) {
+          // filter out layout Templates
+          for (const pkg of combinedSettings.layout) {
+            if (pkg.layout) {
+              layouts.push(pkg);
+            }
+          }
+        }
+        // Import package data
+        this.Importer.package(combinedSettings, shopId);
+        Logger.info(`Successfully initialized  package: ${pkgName}... ${loadedIndex}/${totalPackages}`);
+        loadedIndex += 1;
+      }));
+
+    // helper for removing layout duplicates
+    const uniqLayouts = uniqWith(layouts, _.isEqual);
+    // import layouts into Shops
+    Shops.find().forEach((shop) => {
+      this.Importer.layout(uniqLayouts, shop._id);
+    });
+
+    //
+    // package cleanup
+    //
+    Shops.find().forEach((shop) => Packages.find().forEach((pkg) => {
+      // delete registry entries for packages that have been removed
+      if (!_.has(this.Packages, pkg.name)) {
+        Logger.debug(`Removing ${pkg.name}`);
+        return Packages.remove({ shopId: shop._id, name: pkg.name });
+      }
+      return false;
+    }));
+  },
+
+  /**
+   * @name setAppVersion
+   * @method
+   * @memberof Core
+   * @return {undefined} no return value
+   */
+  setAppVersion() {
+    const { version } = packageJson;
+    Logger.info(`Reaction Version: ${version}`);
+    Shops.update({}, { $set: { appVersion: version } }, { multi: true });
   },
 
   /**
