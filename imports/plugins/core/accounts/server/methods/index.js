@@ -27,6 +27,7 @@ export default {
   "accounts/addUserPermissions": addUserPermissions,
   "accounts/createFallbackLoginToken": createFallbackLoginToken,
   "accounts/removeUserPermissions": removeUserPermissions,
+  // TODO voyego: remove meteor functions accounts/sendResetPasswordEmail, accounts/setProfileCurrency, accounts/setProfileLanguage
   "accounts/setActiveShopId": setActiveShopId,
   "accounts/setUserPermissions": setUserPermissions,
   "accounts/updateEmailAddress": updateEmailAddress,
