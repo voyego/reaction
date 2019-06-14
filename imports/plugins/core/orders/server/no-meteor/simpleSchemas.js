@@ -231,6 +231,7 @@ export const orderInputSchema = new SimpleSchema({
     minCount: 1
   },
   "fulfillmentGroups.$": orderFulfillmentGroupInputSchema,
+  // TODO voyego: order language should be changed from language to ordererPref...
   "ordererPreferredLanguage": {
     type: String,
     optional: true

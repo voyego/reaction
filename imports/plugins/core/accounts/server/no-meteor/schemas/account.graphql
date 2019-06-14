@@ -85,6 +85,7 @@ input SetAccountProfileLanguageInput {
  clientMutationId: String
 
  "The i18n language code value"
+ "TODO voyego: previously it was languageCode, should be changed everywhere to language"
  language: String!
 }
 
@@ -146,6 +147,9 @@ type Account implements Node {
 
   "The preferred currency used by this account"
   currency: Currency
+
+  "The preferred language used by this account"
+  language: String
 
   "A list of email records associated with this account"
   emailRecords: [EmailRecord]
@@ -384,6 +388,9 @@ extend type Mutation {
     "Mutation input"
     input: SetAccountProfileLanguageInput!
   ): SetAccountProfileLanguagePayload!
+
+  "Set the preferred language for an account"
+  setAccountProfileLanguage(input: SetAccountProfileLanguageInput!): SetAccountProfileLanguagePayload
 
   "Remove an address that exists in the `addressBook` field for an account"
   updateAccountAddressBookEntry(

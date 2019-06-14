@@ -9,7 +9,7 @@ import generateVerificationTokenObject from "/imports/plugins/core/accounts/serv
 import getGraphQLContextInMeteorMethod from "/imports/plugins/core/graphql/server/getGraphQLContextInMeteorMethod";
 import ReactionError from "@reactioncommerce/reaction-error";
 
-Accounts.urls.resetPassword = function reset(token) {
+MeteorAccounts.urls.resetPassword = function reset(token) {
   return Meteor.absoluteUrl(`reset-password/${token}`);
 };
 
@@ -123,7 +123,7 @@ export default function sendResetPasswordEmail(options) {
     email: String
   });
 
-  const user = Accounts.findUserByEmail(options.email);
+  const user = MeteorAccounts.findUserByEmail(options.email);
 
   if (!user) {
     Logger.error("accounts/sendResetPasswordEmail - User not found");
