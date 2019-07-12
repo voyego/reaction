@@ -13,6 +13,7 @@ import getTemplateConfig from "../util/getTemplateConfig";
  * @returns {Object} An object with rendered content in properties `html` and `subject`
  */
 export default async function renderEmail(context, { data, shopId, templateName, language }) {
+  // TODO voyego: possible error shopId should be data.shopId
   const { template, subject } = await getTemplateConfig(context, shopId, templateName, language);
 
   const renderSubject = Handlebars.compile(subject);
