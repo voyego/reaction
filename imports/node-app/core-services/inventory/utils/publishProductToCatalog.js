@@ -1,4 +1,5 @@
 import ReactionError from "@reactioncommerce/reaction-error";
+import Logger from "@reactioncommerce/logger";
 
 /**
  * @summary Publishes our plugin-specific product fields to the catalog
@@ -7,6 +8,8 @@ import ReactionError from "@reactioncommerce/reaction-error";
  * @returns {undefined}
  */
 export default async function publishProductToCatalog(catalogProduct, { context }) {
+  const { PRODUCT_LOW_INVENTORY_THRESHOLD } = process.env;
+  const DEFAULT_LOW_INVENTORY_THRESHOLD = 10;
   const { productId, shopId } = catalogProduct;
   // If the product being published does not have variants, do not
   // attempt to publish inventory information.
@@ -43,9 +46,18 @@ export default async function publishProductToCatalog(catalogProduct, { context 
     shopId
   });
 
+  const productQuantity = topVariantsAndOptionsInventory.reduce(
+    (sum, { inventoryInfo: { inventoryAvailableToSell } }) => sum + inventoryAvailableToSell,
+    0
+  );
+
+  if (!PRODUCT_LOW_INVENTORY_THRESHOLD) {
+    Logger.warn("Missing .env variable PRODUCT_LOW_INVENTORY_THRESHOLD, using default value.");
+  }
+
   // Add inventory properties to the top level parent product.
   catalogProduct.isBackorder = topVariantsAndOptionsInventory.every(({ inventoryInfo }) => inventoryInfo.isBackorder);
-  catalogProduct.isLowQuantity = topVariantsAndOptionsInventory.some(({ inventoryInfo }) => inventoryInfo.isLowQuantity);
+  catalogProduct.isLowQuantity = productQuantity < (PRODUCT_LOW_INVENTORY_THRESHOLD || DEFAULT_LOW_INVENTORY_THRESHOLD);
   catalogProduct.isSoldOut = topVariantsAndOptionsInventory.every(({ inventoryInfo }) => inventoryInfo.isSoldOut);
 
   // add inventory props to each top level Variant
