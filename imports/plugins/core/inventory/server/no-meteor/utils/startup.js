@@ -72,7 +72,7 @@ export default function startup(context) {
         $set: {
           "product.isBackorder": topVariantsInventoryInfo.every(({ inventoryInfo }) => inventoryInfo.isBackorder),
           "product.isLowQuantity":
-            productQuantity > (PRODUCT_LOW_INVENTORY_THRESHOLD || DEFAULT_LOW_INVENTORY_THRESHOLD),
+            productQuantity < (PRODUCT_LOW_INVENTORY_THRESHOLD || DEFAULT_LOW_INVENTORY_THRESHOLD),
           "product.isSoldOut": topVariantsInventoryInfo.every(({ inventoryInfo }) => inventoryInfo.isSoldOut)
         }
       }
