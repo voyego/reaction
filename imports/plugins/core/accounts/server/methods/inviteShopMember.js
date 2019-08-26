@@ -124,12 +124,16 @@ export default function inviteShopMember(options) {
   SSR.compileTemplate(subject, Reaction.Email.getSubject(tpl, language));
 
   // send invitation email from primary shop email
-  Reaction.Email.send({
+  const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
+  /*
+  Promise.await(context.mutations.sendEmail(context, {
+    data: dataForEmail,
+    fromShop: primaryShop,
+    templateName,
     to: email,
-    from: `${dataForEmail.primaryShop.name} <${dataForEmail.primaryShop.emails[0].address}>`,
-    subject: SSR.render(subject, dataForEmail),
-    html: SSR.render(tpl, dataForEmail)
-  });
+    language,
+  }));
+  */
 
   return account;
 }
