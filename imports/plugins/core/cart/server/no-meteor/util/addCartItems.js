@@ -2,6 +2,7 @@ import Random from "@reactioncommerce/random";
 import SimpleSchema from "simpl-schema";
 import { toFixed } from "accounting-js";
 import ReactionError from "@reactioncommerce/reaction-error";
+import { ImageSizes } from "imports/collections/schemas";
 
 const inputItemSchema = new SimpleSchema({
   "metafields": {
@@ -21,7 +22,8 @@ const inputItemSchema = new SimpleSchema({
   "price.amount": {
     type: Number,
     optional: true
-  }
+  },
+  "productImage": { type: ImageSizes, optional: true },
 });
 
 /**
@@ -139,7 +141,8 @@ export default async function addCartItems(context, currentItems, inputItems, op
       title: catalogProduct.title,
       updatedAt: currentDateTime,
       variantId: productVariantId,
-      variantTitle: chosenVariant.title
+      variantTitle: chosenVariant.title,
+      productImage: inputItem.productImage
     };
 
     if (variantPriceInfo.compareAtPrice || variantPriceInfo.compareAtPrice === 0) {
