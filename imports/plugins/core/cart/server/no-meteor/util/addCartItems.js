@@ -23,7 +23,8 @@ const inputItemSchema = new SimpleSchema({
     type: Number,
     optional: true
   },
-  "productImage": { type: ImageSizes, optional: true },
+  "productImages": { type: Array, optional: true },
+  "productImages.$": { type: ImageSizes},
 });
 
 /**
@@ -142,7 +143,7 @@ export default async function addCartItems(context, currentItems, inputItems, op
       updatedAt: currentDateTime,
       variantId: productVariantId,
       variantTitle: chosenVariant.title,
-      productImage: inputItem.productImage
+      productImages: inputItem.productImages
     };
 
     if (variantPriceInfo.compareAtPrice || variantPriceInfo.compareAtPrice === 0) {
