@@ -46,19 +46,23 @@ function getStripeShippingObject(address) {
 export default async function stripeCreateAuthorizedPayment(context, input) {
   const {
     accountId,
-    amount,
     billingAddress,
     currencyCode,
     email,
     shippingAddress,
     shopId,
-    paymentData: {
-      stripeTokenId
-    }
+    paymentData: { stripeTokenId }
   } = input;
 
   const stripe = await getStripeInstanceForShop(context, shopId);
+  amount = 1099;
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount,
+    currency: "usd",
+    payment_method_types: ["card"]
+  });
 
+  /*
   // For orders with only a single fulfillment group, we could create a charge directly from the card token, and skip
   // creating a customer. However, to help make future charging easier and because we always have an email address and tracking
   // payments by customer in Stripe can be useful, we create a customer no matter what.
@@ -78,29 +82,28 @@ export default async function stripeCreateAuthorizedPayment(context, input) {
     // "Shipping information for the charge. Helps prevent fraud on charges for physical goods."
     shipping: getStripeShippingObject(shippingAddress)
   });
+  */
 
   return {
     _id: Random.id(),
     address: billingAddress,
-    amount: charge.amount / 100,
-    cardBrand: charge.source.brand,
-    createdAt: new Date(charge.created * 1000), // convert S to MS
+    amount, 
+    cardBrand: "visa", // charge.source.brand,
+    createdAt: new Date(), // convert S to MS
     data: {
-      chargeId: charge.id,
-      charge,
-      customerId: stripeCustomerId,
+      paymentId: paymentIntent.client_secret,
       gqlType: "StripeCardPaymentData" // GraphQL union resolver uses this
     },
-    displayName: `${charge.source.brand} ${charge.source.last4}`,
+    displayName: `random`,
     method: METHOD,
     mode: "authorize",
     name: PAYMENT_METHOD_NAME,
     paymentPluginName: PACKAGE_NAME,
     processor: PROCESSOR,
-    riskLevel: riskLevelMap[charge.outcome && charge.outcome.risk_level] || "normal",
+    riskLevel: "normal",
     shopId,
     status: "created",
-    transactionId: charge.id,
-    transactions: [charge]
+    transactionId: paymentIntent.id,
+    transactions: [paymentIntent]
   };
 }
