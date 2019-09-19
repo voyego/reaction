@@ -62,7 +62,10 @@ export default async function sendEmail(context, options) {
     const defaultData = {
       emailLogo,
       shop: fromShop,
-      shopId: fromShopId
+      shopId: fromShopId,
+      nettoFontCss: context.getAbsoluteUrl("custom/gswebfonts.css"),
+      shopLogo: context.getAbsoluteUrl("custom/shop-logo.png"),
+      absoluteUrl: context.getAbsoluteUrl("/")
     };
 
     const { html, subject } = await context.mutations.renderEmail(context, {
