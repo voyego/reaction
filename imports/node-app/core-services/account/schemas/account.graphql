@@ -111,8 +111,7 @@ input SetAccountProfileLanguageInput {
  "An optional string identifying the mutation call, which will be returned in the response payload"
  clientMutationId: String
 
- "The i18n language code value"
- "TODO voyego: previously it was languageCode, should be changed everywhere to language"
+ "The i18n language code value TODO voyego: previously it was languageCode, should be changed everywhere to language"
  language: String!
 }
 
