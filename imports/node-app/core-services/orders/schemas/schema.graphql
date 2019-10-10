@@ -740,7 +740,12 @@ input OrderInput {
   """
   shopId: String!
 
-  language: String
+  """
+  The preferred Language of user who creates order. If order is created anonymous then this language will be
+  used to determinate in which language to send emails. If order is created by Account, then Account profile
+  language will be used.
+  """
+  ordererPreferredLanguage: String!
 }
 
 "Input for adding order payments"
