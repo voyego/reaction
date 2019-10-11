@@ -1,6 +1,5 @@
 import _ from "lodash";
 import SimpleSchema from "simpl-schema";
-import R from "ramda";
 import Logger from "@reactioncommerce/logger";
 import Random from "@reactioncommerce/random";
 import ReactionError from "@reactioncommerce/reaction-error";
