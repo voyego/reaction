@@ -58,7 +58,7 @@ async function initializeI18n(fallbackLng) {
         //
         // For ease of testing translations, we also support `lng`
         // query string to override the browser setting.
-        order: ["querystring", "navigator"]
+        order: ["cookie", "querystring", "navigator"]
       },
       ns: allTranslationNamespaces,
       defaultNS: "core", // reaction "core" is the default namespace
