@@ -2,8 +2,6 @@ import _ from "lodash";
 import formatMoney from "@reactioncommerce/api-utils/formatMoney.js";
 import { xformOrderItems } from "@reactioncommerce/reaction-graphql-xforms/order";
 import { addAnonymousOrderToken } from "./anonymousToken.js";
-import formatMoney from "/imports/utils/formatMoney";
-import { getPaymentMethodConfigByName } from "/imports/plugins/core/payments/server/no-meteor/registration";
 import * as R from "ramda";
 
 /**
