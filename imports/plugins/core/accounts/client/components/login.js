@@ -21,7 +21,10 @@ class Login extends Component {
     super(props);
 
     const currentRoute = Router.current().route;
-    const isPasswordReset = ["reset-password", "account/enroll"].includes(currentRoute.name);
+    // Quickfix for github issue 5726
+    // https://github.com/reactioncommerce/reaction/issues/5726
+    // const isPasswordReset = ["reset-password", "account/enroll"].includes(currentRoute.name);
+    const isPasswordReset = /^\/reset-password\//.test(currentRoute.path);
 
     this.state = {
       currentView: isPasswordReset ? "loginFormUpdatePasswordView" : props.loginFormCurrentView
