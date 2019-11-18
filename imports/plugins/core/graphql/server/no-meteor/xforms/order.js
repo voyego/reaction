@@ -91,19 +91,11 @@ export function xformOrderFulfillmentGroupSelectedOption(fulfillmentOption) {
 /**
  * @param {Object} context - an object containing the per-request state
  * @param {Object} item The order fulfillment group item in DB format
- * @param {Object[]} catalogItems Array of CatalogItem docs from the db
  * @param {Object[]} products Array of Product docs from the db
  * @return {Object} Same object with GraphQL-only props added
  */
-async function xformOrderItem(context, item, catalogItems) {
+async function xformOrderItem(context, item) {
   const { productId, variantId } = item;
-
-  const catalogItem = catalogItems.find((cItem) => cItem.product.productId === productId);
-  if (!catalogItem) {
-    throw new ReactionError("not-found", `CatalogProduct with product ID ${productId} not found`);
-  }
-
-  const catalogProduct = catalogItem.product;
 
   const { variant } = await context.queries.findProductMedia(context, variantId, productId);
   if (!variant) {
@@ -115,16 +107,12 @@ async function xformOrderItem(context, item, catalogItems) {
   let media;
   if (variant.media && variant.media.length) {
     [media] = variant.media;
-  } else if (catalogProduct.media && catalogProduct.media.length) {
-    media = catalogProduct.media.find((mediaItem) => mediaItem.variantId === variantId);
-    if (!media) [media] = catalogProduct.media;
   }
 
   // Allow plugins to transform the media object
   if (media) {
     media = await xformCatalogProductMedia(media, context);
   }
-
 
   return {
     ...item,
@@ -146,19 +134,5 @@ async function xformOrderItem(context, item, catalogItems) {
  * @return {Object[]} Same array with GraphQL-only props added
  */
 export async function xformOrderItems(context, items) {
-  const { collections } = context;
-  const { Catalog } = collections;
-
-  const productIds = items.map((item) => item.productId);
-
-  const catalogItems = await Catalog.find({
-    "product.productId": {
-      $in: productIds
-    },
-    "product.isVisible": true,
-    "product.isDeleted": { $ne: true },
-    "isDeleted": { $ne: true }
-  }).toArray();
-
-  return Promise.all(items.map((item) => xformOrderItem(context, item, catalogItems)));
+  return Promise.all(items.map((item) => xformOrderItem(context, item)));
 }
