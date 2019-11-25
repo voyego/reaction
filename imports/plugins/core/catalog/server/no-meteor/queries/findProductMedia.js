@@ -1,4 +1,5 @@
 import Logger from "@reactioncommerce/logger";
+import * as R from "ramda";
 
 export default async function findProductMedia(context, variantId, productId) {
   try {
@@ -19,7 +20,7 @@ export default async function findProductMedia(context, variantId, productId) {
       }
     ).toArray();
 
-    let media = [{ 
+    let media = [{
       URLs: {},
       productId,
       variantId,
@@ -29,24 +30,19 @@ export default async function findProductMedia(context, variantId, productId) {
 
     for (const relatedProduct of relatedProducts) {
       if (!media[0].URLs.original) {
-        const promises = relatedProduct.metafields.map(async (metafield) => {
-          if (metafield.namespace === "1") {
-            if (metafield.valueType === "medium") {
-              media[0].URLs.medium = metafield.value;
-            }
-            if (metafield.valueType === "original") {
-              media[0].URLs.large = metafield.value;
-              media[0].URLs.original = metafield.value;
-            }
-            if (metafield.valueType === "small") {
-              media[0].URLs.small = metafield.value;
-            }
-            if (metafield.valueType === "thumbnail") {
-              media[0].URLs.thumbnail = metafield.value;
-            }
-          }
-        });
-        await Promise.all(promises);
+        if (R.path(['attributes', 'options', 'images', 0, 'medium'])(relatedProduct)) {
+          media[0].URLs.medium = R.path(['attributes', 'options', 'images', 0, 'medium'])(relatedProduct);
+        }
+        if (R.path(['attributes', 'options', 'images', 0, 'original'])(relatedProduct)) {
+          media[0].URLs.large = R.path(['attributes', 'options', 'images', 0, 'original'])(relatedProduct);
+          media[0].URLs.original = R.path(['attributes', 'options', 'images', 0, 'original'])(relatedProduct);
+        }
+        if (R.path(['attributes', 'options', 'images', 0, 'small'])(relatedProduct)) {
+          media[0].URLs.small = R.path(['attributes', 'options', 'images', 0, 'small'])(relatedProduct);
+        }
+        if (R.path(['attributes', 'options', 'images', 0, 'thumbnail'])(relatedProduct)) {
+          media[0].URLs.thumbnail = R.path(['attributes', 'options', 'images', 0, 'thumbnail'])(relatedProduct);
+        }
       }
     }
 
