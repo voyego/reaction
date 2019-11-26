@@ -229,6 +229,8 @@ input CreateCartInput {
 
   "ShopId association for the cart."
   shopId: ID!
+
+  discountId: String
 }
 
 "Information about an item to add to a cart"
