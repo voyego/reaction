@@ -15,7 +15,7 @@ import { decodeShopOpaqueId } from "@reactioncommerce/reaction-graphql-xforms/sh
  * @return {Promise<Object>} CreateCartPayload
  */
 export default async function createCart(parentResult, { input }, context) {
-  const { clientMutationId = null, items: itemsInput, shopId: opaqueShopId } = input;
+  const { clientMutationId = null, items: itemsInput, shopId: opaqueShopId, discountId } = input;
   const shopId = decodeShopOpaqueId(opaqueShopId);
   const items = decodeCartItemsOpaqueIds(itemsInput);
 
@@ -26,7 +26,8 @@ export default async function createCart(parentResult, { input }, context) {
     token
   } = await context.mutations.createCart(context, {
     items,
-    shopId
+    shopId,
+    discountId
   });
 
   return {
