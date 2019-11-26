@@ -4,7 +4,6 @@ import Random from "@reactioncommerce/random";
 import { Meteor } from "meteor/meteor";
 import { Accounts as MeteorAccounts } from "meteor/accounts-base";
 import { Accounts } from "/lib/collections";
-import { SSR } from "meteor/meteorhacks:ssr";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import ReactionError from "@reactioncommerce/reaction-error";
 
@@ -101,33 +100,14 @@ export default async function sendVerificationEmail({
     confirmationUrl: url,
     userEmailAddress: address
   };
-
-  if (!Reaction.Email.getMailUrl()) {
-    Logger.warn(`
-
-  ***************************************************
-          IMPORTANT! EMAIL VERIFICATION LINK
-
-           Email sending is not configured.
-
-  Go to the following URL to verify email: ${address}
-
-  ${url}
-  ***************************************************
-
-    `);
-  }
-
   const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
   const language = account && account.profile && account.profile.language;
-
-  SSR.compileTemplate(bodyTemplate, Reaction.Email.getTemplate(bodyTemplate, language));
-  SSR.compileTemplate(subjectTemplate, Reaction.Email.getSubject(bodyTemplate, language));
-
-  return Reaction.Email.send({
+  const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
+  return Promise.await(context.mutations.sendEmail(context, {
+    data: dataForEmail,
+    fromShopId: Reaction.getShopId(),
+    templateName: bodyTemplate,
     to: address,
-    from: Reaction.getShopEmail(),
-    subject: SSR.render(subjectTemplate, dataForEmail),
-    html: SSR.render(bodyTemplate, dataForEmail)
-  });
+    language
+  }));
 }

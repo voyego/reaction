@@ -118,11 +118,6 @@ export default function inviteShopMember(options) {
 
   const account = Accounts.findOne({ userId });
   const language = account && account.profile && account.profile.language;
-
-  // Compile Email with SSR
-  SSR.compileTemplate(tpl, Reaction.Email.getTemplate(tpl, language));
-  SSR.compileTemplate(subject, Reaction.Email.getSubject(tpl, language));
-
   // send invitation email from primary shop email
   const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
   /*

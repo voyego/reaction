@@ -7,7 +7,6 @@ import * as Collections from "/lib/collections";
 import ConnectionDataStore from "/imports/plugins/core/core/server/util/connectionDataStore";
 import { AbsoluteUrlMixin } from "./absoluteUrl";
 import { getUserId } from "./accountUtils";
-
 /**
  * @file Server core methods
  *

@@ -1,15 +1,14 @@
 import _ from "lodash";
-import { Accounts } from "meteor/accounts-base";
+import Logger from "@reactioncommerce/logger";
+import Random from "@reactioncommerce/random";
+import { Accounts as MeteorAccounts } from "meteor/accounts-base";
 import { check } from "meteor/check";
 import { Meteor } from "meteor/meteor";
-import generateVerificationTokenObject from "@reactioncommerce/api-utils/generateVerificationTokenObject.js";
-import Logger from "@reactioncommerce/logger";
-import ReactionError from "@reactioncommerce/reaction-error";
-import { Shops } from "/lib/collections";
+import { Accounts, Shops } from "/lib/collections";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import getGraphQLContextInMeteorMethod from "/imports/plugins/core/graphql/server/getGraphQLContextInMeteorMethod";
 
-Accounts.urls.resetPassword = function reset(token) {
+MeteorAccounts.urls.resetPassword = function reset(token) {
   return Meteor.absoluteUrl(`reset-password/${token}`);
 };
 
@@ -66,12 +65,12 @@ async function sendResetEmail(userId, optionalEmail, language) {
     shop,
     contactEmail: shop.emails[0].address,
     homepage: Reaction.absoluteUrl(),
+    storefrontUrl: _.get(shop, "storefrontUrls.storefrontHomeUrl", null),
     copyrightDate,
     legalName: _.get(shop, "addressBook[0].company"),
     physicalAddress: {
-      address: `${_.get(shop, "addressBook[0].address1")} ${_.get(shop, "addressBook[0].address2")}`,
+      address: `${_.get(shop, "addressBook[0].address1")}`,
       city: _.get(shop, "addressBook[0].city"),
-      region: _.get(shop, "addressBook[0].region"),
       postal: _.get(shop, "addressBook[0].postal")
     },
     shopName: shop.name,
@@ -94,17 +93,19 @@ async function sendResetEmail(userId, optionalEmail, language) {
       }
     },
     // Account Data
-    passwordResetUrl: Accounts.urls.resetPassword(tokenObj.token),
+    passwordResetUrl: MeteorAccounts.urls.resetPassword(token),
     user
   };
 
+  const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
+  const language = account && account.profile && account.profile.language;
   const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
   return Promise.await(context.mutations.sendEmail(context, {
     data: dataForEmail,
     fromShop: shop,
     templateName: "accounts/resetPassword",
-    language,
-    to: email
+    to: email,
+    language
   }));
 }
 
@@ -123,7 +124,7 @@ export default function sendResetPasswordEmail(options) {
     email: String
   });
 
-  const user = Accounts.findUserByEmail(options.email);
+  const user = MeteorAccounts.findUserByEmail(options.email);
 
   if (!user) {
     Logger.error("accounts/sendResetPasswordEmail - User not found");

@@ -3,7 +3,6 @@ import Random from "@reactioncommerce/random";
 import { Meteor } from "meteor/meteor";
 import { Accounts as MeteorAccounts } from "meteor/accounts-base";
 import { check, Match } from "meteor/check";
-import { SSR } from "meteor/meteorhacks:ssr";
 import { Accounts } from "/lib/collections";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import ReactionError from "@reactioncommerce/reaction-error";
@@ -58,11 +57,6 @@ export default function inviteShopOwner(options, shopData) {
 
   const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
   const language = account && account.profile && account.profile.language;
-
-  SSR.compileTemplate(tpl, Reaction.Email.getTemplate(tpl, language));
-  SSR.compileTemplate(subject, Reaction.Email.getSubject(tpl, language));
-
-  const emailLogo = Reaction.Email.getShopLogo(primaryShop);
   const token = Random.id();
   const currentUser = Meteor.user();
   const currentUserName = getCurrentUserName(currentUser);

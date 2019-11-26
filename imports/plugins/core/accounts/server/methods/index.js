@@ -4,6 +4,8 @@ import getUserId from "./getUserId";
 import groupMethods from "./group";
 import removeUserPermissions from "./removeUserPermissions";
 import setActiveShopId from "./setActiveShopId";
+import setProfileCurrency from "./setProfileCurrency";
+import setProfileLanguage from "./setProfileLanguage";
 import setUserPermissions from "./setUserPermissions";
 import updateEmailAddress from "./updateEmailAddress";
 import updateServiceConfiguration from "./updateServiceConfiguration";
@@ -29,6 +31,8 @@ export default {
   "accounts/removeUserPermissions": removeUserPermissions,
   // TODO voyego: remove meteor functions accounts/sendResetPasswordEmail, accounts/setProfileCurrency, accounts/setProfileLanguage
   "accounts/setActiveShopId": setActiveShopId,
+  "accounts/setProfileCurrency": setProfileCurrency,
+  "accounts/setProfileLanguage": setProfileLanguage,
   "accounts/setUserPermissions": setUserPermissions,
   "accounts/updateEmailAddress": updateEmailAddress,
   "accounts/updateServiceConfiguration": updateServiceConfiguration,
