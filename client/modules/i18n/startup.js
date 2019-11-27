@@ -101,11 +101,6 @@ async function initializeI18n(fallbackLng) {
   i18nextDep.changed();
 }
 
-function getCookieValue(a) {
-    var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
-    return b ? b.pop() : '';
-}
-
 Meteor.startup(() => {
   // Autorun only long enough to be sure we have a shop ID
   Tracker.autorun((computation) => {
@@ -117,89 +112,7 @@ Meteor.startup(() => {
     const shop = Shops.findOne({ _id: shopId });
     const shopLanguage = (shop && shop.language) || null;
 
-    // Use fallbacks to determine the final language
-    const language = getCookieValue("lngStorefrontGreenstorm") ||  userLanguage || shopLanguage || "de";
-
-    //
-    // subscribe to user + shop Translations
-    //
-    return Meteor.subscribe("Translations", language, () => {
-      //
-      // reduce and merge translations
-      // into i18next resource format
-      //
-      const packageNamespaces = [];
-      let resources = {};
-      Translations.find({}).forEach((translation) => {
-        resources = mergeDeep(resources, {
-          [translation.i18n]: translation.translation
-        });
-        packageNamespaces.push(translation.ns);
-      });
-
-      //
-      // initialize i18next
-      //
-      i18next
-        .use(i18nextBrowserLanguageDetector)
-        .use(i18nextLocalStorageCache)
-        .use(i18nextSprintfPostProcessor)
-        .init({
-          detection: options,
-          debug: false,
-          ns: packageNamespaces, // translation namespace for every package
-          defaultNS: "core", // reaction "core" is the default namespace
-          fallbackNS: packageNamespaces,
-          lng: language,
-          fallbackLng: shopLanguage,
-          resources
-        }, () => {
-          // Loop through registered Schemas to change labels and messages
-          for (const schemaName in Schemas) {
-            if ({}.hasOwnProperty.call(Schemas, schemaName)) {
-              const schemaInstance = Schemas[schemaName];
-              schemaInstance.labels(getLabelsFor(schemaInstance, schemaName));
-              schemaInstance.messageBox.messages({
-                [language]: getValidationErrorMessages()
-              });
-              schemaInstance.messageBox.setLanguage(language);
-            }
-          }
-
-          i18nextDep.changed();
-
-          // global first time init event finds and replaces
-          // data-i18n attributes in html/template source.
-          $("[data-i18n]").localize();
-
-          // apply language direction to html
-          if (i18next.dir(language) === "rtl") {
-            return $("html").addClass("rtl");
-          }
-          return $("html").removeClass("rtl");
-        });
-    }); // return
-  });
-
-  // Detect user currency changes.
-  // These two autoruns work together to ensure currencyDep is only considered
-  // to be changed when it should be.
-  // XXX currencyDep is not used by the main app. Maybe can get rid of this
-  // if no add-on packages use it?
-  const userCurrency = new ReactiveVar();
-  Tracker.autorun(() => {
-    // We are using the reactive var only to be sure that currencyDep.changed()
-    // is called only when the value is actually changed from the previous value.
-    const currency = userCurrency.get();
-    if (currency) currencyDep.changed();
-  });
-  Tracker.autorun(() => {
-    const user = Meteor.user();
-    if (Reaction.Subscriptions.PrimaryShop.ready() &&
-        Reaction.Subscriptions.MerchantShops.ready() &&
-        user) {
-      userCurrency.set((user.profile && user.profile.currency) || undefined);
-    }
+    initializeI18n(shopLanguage || "de");
   });
 
   //
