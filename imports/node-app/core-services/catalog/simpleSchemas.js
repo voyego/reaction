@@ -1,4 +1,6 @@
 import SimpleSchema from "simpl-schema";
+import { AttributesSchema as AttributesVariantSchema } from "/imports/collections/extend/productVariant";
+import { AttributesSchema as AttributesSimpleSchema } from "/imports/collections/extend/productSimple";
 
 /**
  * @name Metafield
@@ -308,6 +310,10 @@ export const CatalogProductVariant = CatalogProductOption.clone().extend({
   },
   "options.$": {
     type: CatalogProductOption
+  },
+  "attributes": {
+    type: AttributesVariantSchema,
+    optional: true
   }
 });
 
@@ -404,6 +410,10 @@ export const CatalogProduct = new SimpleSchema({
   },
   "metafields.$": {
     type: Metafield
+  },
+  "attributes": {
+    type: AttributesSimpleSchema,
+    optional: true
   },
   "metaDescription": {
     type: String,

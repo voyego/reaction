@@ -208,6 +208,16 @@ const OptionsSchema = new SimpleSchema({
   "images.$.original": {
     type: String,
     optional: true
+  },
+  "price": {
+    type: Object,
+    optional: true
+  },
+  "price.min": Number,
+  "price.max": Number,
+  "listPrice": {
+    type: Number,
+    optional: true
   }
 });
 
