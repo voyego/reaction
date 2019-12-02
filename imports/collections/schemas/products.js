@@ -139,6 +139,10 @@ export const ProductVariant = new SimpleSchema({
     optional: true,
     defaultValue: 0
   },
+  "isTaxable": Boolean,
+  "taxCode": String,
+  "compareAtPrice": Number,
+  "price": Number,
   "metafields": {
     type: Array,
     optional: true
@@ -309,6 +313,16 @@ export const Product = new SimpleSchema({
     defaultValue: false
   },
   "metaDescription": {
+    type: String,
+    optional: true
+  },
+  "price": {
+    type: Object,
+    optional: true
+  },
+  "price.min": Number,
+  "price.max": Number,
+  "price.range": {
     type: String,
     optional: true
   },

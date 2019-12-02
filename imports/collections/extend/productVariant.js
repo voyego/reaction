@@ -15,12 +15,6 @@ const SystemSchema = new SimpleSchema({
   priceDiscountMileage: {
     type: String,
     defaultValue: 0
-  },
-  isTaxable: {
-    type: Boolean
-  },
-  taxCode: {
-    type: String
   }
 });
 
@@ -83,12 +77,7 @@ const OptionsSchema = new SimpleSchema({
   "images.$.original": {
     type: String,
     optional: true
-  },
-  "price": {
-    type: Object,
-    optional: true
-  },
-  "price.EUR": Number
+  }
 });
 
 export const AttributesSchema = new SimpleSchema({

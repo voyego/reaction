@@ -219,8 +219,8 @@ const OptionsSchema = new SimpleSchema({
   },
   "price.EUR.min": Number,
   "price.EUR.max": Number,
-  "price.EUR.listPrice": {
-    type: Number,
+  "price.EUR.range": {
+    type: String,
     optional: true
   }
 });
