@@ -213,9 +213,13 @@ const OptionsSchema = new SimpleSchema({
     type: Object,
     optional: true
   },
-  "price.min": Number,
-  "price.max": Number,
-  "listPrice": {
+  "price.EUR": {
+    type: Object,
+    optional: true
+  },
+  "price.EUR.min": Number,
+  "price.EUR.max": Number,
+  "price.EUR.listPrice": {
     type: Number,
     optional: true
   }

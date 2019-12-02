@@ -84,7 +84,11 @@ const OptionsSchema = new SimpleSchema({
     type: String,
     optional: true
   },
-  "price": Number
+  "price": {
+    type: Object,
+    optional: true
+  },
+  "price.EUR": Number
 });
 
 export const AttributesSchema = new SimpleSchema({
