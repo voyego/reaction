@@ -3,6 +3,9 @@ import SimpleSchema from "simpl-schema";
 const SystemSchema = new SimpleSchema({
   originId: {
     type: String
+  },
+  weight: {
+    type: String
   }
 });
 
