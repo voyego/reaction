@@ -458,6 +458,15 @@ export const Order = new SimpleSchema({
     blackbox: true,
     optional: true
   },
+  "customFields.recaptcha": {
+    type: String
+  },
+  "customFields.deliveryOption": {
+    type: String
+  },
+  "customFields.deliveryShopId": {
+    type: String
+  },
   "discounts": {
     type: Array,
     optional: true

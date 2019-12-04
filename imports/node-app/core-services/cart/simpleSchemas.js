@@ -892,5 +892,9 @@ export const Cart = new SimpleSchema({
   "updatedAt": {
     type: Date,
     optional: true
+  },
+  "deliveryOption": {
+    type: String,
+    optional: true
   }
 });
