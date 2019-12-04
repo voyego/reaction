@@ -21,7 +21,7 @@ import addCartItems from "../util/addCartItems.js";
  *   optionally retry with the correct price or quantity.
  */
 export default async function createCart(context, input) {
-  const { items, shopId, shouldCreateWithoutItems = false } = input;
+  const { items, shopId, shouldCreateWithoutItems = false, discountId } = input;
   const { collections, accountId = null, getFunctionsOfType } = context;
   const { Cart, Shops } = collections;
 
@@ -72,6 +72,14 @@ export default async function createCart(context, input) {
       status: "new"
     }
   };
+
+  if (discountId) {
+    try {
+      await context.mutations.setDiscountCodeOnCart(context, { discountId, cartId: newCart._id });
+    } catch (err) {
+      Logger.error(err);
+    }
+  }
 
   let referenceId;
   const createReferenceIdFunctions = getFunctionsOfType("createCartReferenceId");
