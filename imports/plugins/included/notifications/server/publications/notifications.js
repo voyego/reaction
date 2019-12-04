@@ -6,13 +6,13 @@ import { Notifications } from "/lib/collections";
 /**
  * Notification list publication
  * @param {String} userId
- * @return {Object} return notification cursor
+ * @returns {Object} return notification cursor
  */
 Meteor.publish("Notification", function (userId) {
   check(userId, Match.OptionalOrNull(String));
 
   if (!userId) {
-    Logger.debug("Ingnoring null request on Notification Subscription");
+    Logger.debug("Ignoring null request on Notification Subscription");
     return this.ready();
   }
 

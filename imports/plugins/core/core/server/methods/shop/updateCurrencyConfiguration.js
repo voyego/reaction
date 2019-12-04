@@ -10,7 +10,7 @@ import { Shops } from "/lib/collections";
  * @summary enable / disable a currency
  * @param {String} currency - currency name | "all" to bulk enable / disable
  * @param {Boolean} enabled - true / false
- * @return {Number} returns mongo update result
+ * @returns {Number} returns mongo update result
  */
 export default function updateCurrencyConfiguration(currency, enabled) {
   check(currency, String);
@@ -22,11 +22,17 @@ export default function updateCurrencyConfiguration(currency, enabled) {
   }
   this.unblock();
 
+  const shopId = Reaction.getShopId();
+
   const shop = Shops.findOne({
-    _id: Reaction.getShopId()
+    _id: shopId
   });
 
   const defaultCurrency = shop.currency;
+
+  if (currency === defaultCurrency && !enabled) {
+    throw new ReactionError("invalid-param", "Cannot disable the shop default currency");
+  }
 
   if (currency === "all") {
     const updateObject = {};
@@ -41,22 +47,14 @@ export default function updateCurrencyConfiguration(currency, enabled) {
     }
 
     return Shops.update({
-      _id: Reaction.getShopId()
+      _id: shopId
     }, {
       $set: updateObject
-    });
-  } else if (currency === defaultCurrency) {
-    return Shops.update({
-      _id: Reaction.getShopId()
-    }, {
-      $set: {
-        [`currencies.${currency}.enabled`]: true
-      }
     });
   }
 
   return Shops.update({
-    _id: Reaction.getShopId()
+    _id: shopId
   }, {
     $set: {
       [`currencies.${currency}.enabled`]: enabled

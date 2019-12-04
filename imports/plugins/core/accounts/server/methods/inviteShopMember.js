@@ -4,8 +4,8 @@ import Random from "@reactioncommerce/random";
 import { Meteor } from "meteor/meteor";
 import { Accounts as MeteorAccounts } from "meteor/accounts-base";
 import { check } from "meteor/check";
+import { SSR } from "meteor/meteorhacks:ssr";
 import { Accounts, Groups, Shops } from "/lib/collections";
-import getGraphQLContextInMeteorMethod from "/imports/plugins/core/graphql/server/getGraphQLContextInMeteorMethod";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import ReactionError from "@reactioncommerce/reaction-error";
 import getCurrentUserName from "../no-meteor/util/getCurrentUserName";
@@ -68,49 +68,38 @@ export default function inviteShopMember(options) {
 
   const currentUser = Meteor.user();
   const currentUserName = getCurrentUserName(currentUser);
+  const emailLogo = Reaction.Email.getShopLogo(primaryShop);
   const user = Meteor.users.findOne({ "emails.address": email });
-  const matchingEmail = user &&
-    user.emails &&
-    user.emails.find((emailObject) => emailObject.address === email);
-
-  const isEmailVerified = matchingEmail && matchingEmail.verified;
   const token = Random.id();
-
   let dataForEmail;
   let userId;
-  let templateName;
-
-  if (user) {
-    userId = user._id;
-  }
+  let tpl;
+  let subject;
 
   // If the user already has an account, send informative email, not "invite" email
-  if (user && isEmailVerified) {
+  if (user) {
     // The user already exists, we promote the account, rather than creating a new one
+    userId = user._id;
     Meteor.call("group/addUser", userId, groupId);
 
     // do not send token, as no password reset is needed
     const url = Reaction.absoluteUrl();
 
     // use primaryShop's data (name, address etc) in email copy sent to new shop manager
-    dataForEmail = getDataForEmail({ shop: primaryShop, currentUserName, name, url });
+    dataForEmail = getDataForEmail({ shop: primaryShop, currentUserName, name, emailLogo, url });
 
     // Get email template and subject
-    templateName = "accounts/inviteShopMember";
+    tpl = "accounts/inviteShopMember";
+    subject = "accounts/inviteShopMember/subject";
   } else {
-    // There could be an existing user with an invite still pending (not activated).
-    // We create a new account only if there's no pending invite.
-    if (!user) {
-      // The user does not already exist, we need to create a new account
-      userId = MeteorAccounts.createUser({
-        profile: { invited: true },
-        email,
-        name,
-        groupId
-      });
-    }
-
-    // set token to be used for first login for the new accoun
+    // The user does not already exist, we need to create a new account
+    userId = MeteorAccounts.createUser({
+      profile: { invited: true },
+      email,
+      name,
+      groupId
+    });
+    // set token to be used for first login for the new account
     const tokenUpdate = {
       "services.password.reset": { token, email, when: new Date() },
       name
@@ -118,10 +107,11 @@ export default function inviteShopMember(options) {
     Meteor.users.update(userId, { $set: tokenUpdate });
 
     // use primaryShop's data (name, address etc) in email copy sent to new shop manager
-    dataForEmail = getDataForEmail({ shop: primaryShop, currentUserName, name, token });
+    dataForEmail = getDataForEmail({ shop: primaryShop, currentUserName, name, token, emailLogo });
 
     // Get email template and subject
-    templateName = "accounts/inviteNewShopMember";
+    tpl = "accounts/inviteNewShopMember";
+    subject = "accounts/inviteNewShopMember/subject";
   }
 
   dataForEmail.groupName = _.startCase(group.name);

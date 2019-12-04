@@ -6,11 +6,12 @@ import rawCollections from "/imports/collections/rawCollections";
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const Inventory = db.collection("Inventory");
+const Translations = db.collection("Translations");
 
 /**
  * @private
  * @param {Error} error Error or null
- * @return {undefined}
+ * @returns {undefined}
  */
 function handleError(error) {
   // This may fail if the index or the collection doesn't exist, which is what we want anyway
@@ -40,8 +41,7 @@ Migrations.add({
       Orders,
       Packages,
       Products,
-      Shops,
-      Translations
+      Shops
     } = rawCollections;
 
     Accounts.dropIndex("c2_sessions", handleError);

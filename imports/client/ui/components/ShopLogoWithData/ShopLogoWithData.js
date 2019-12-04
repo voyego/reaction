@@ -33,13 +33,16 @@ const styles = (theme) => ({
     alignItems: "center"
   },
   logo: {
-    marginRight: theme.spacing.unit * 2
+    marginRight: theme.spacing(2)
+  },
+  logoName: {
+    color: theme.palette.colors.black15
   }
 });
 
 /**
  * ShopLogoWithData
- * @params {Object} props Component props
+ * @param {Object} props Component props
  * @returns {Node} React component
  */
 function ShopLogoWithData({ className, classes, shopId, shouldShowShopName, linkTo, size }) {
@@ -69,10 +72,9 @@ function ShopLogoWithData({ className, classes, shopId, shouldShowShopName, link
                 />
                 {shouldShowShopName &&
                   <Typography
-                    color="textSecondary"
-                    display="display"
                     variant="h3"
                     component="span"
+                    className={classes.logoName}
                   >
                     {shop.name}
                   </Typography>

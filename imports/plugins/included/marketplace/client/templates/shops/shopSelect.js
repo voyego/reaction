@@ -5,9 +5,11 @@ import { Shops } from "/lib/collections";
 
 Template.shopSelect.helpers({
   shops() {
-    if (Reaction.Subscriptions.PrimaryShop.ready() && Reaction.Subscriptions.MerchantShops.ready()) {
+    if (Reaction.Subscriptions.PrimaryShop.ready()) {
       return Shops.find();
     }
+
+    return null;
   },
 
   isActiveShop(shopId) {

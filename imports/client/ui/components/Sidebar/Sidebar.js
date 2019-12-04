@@ -37,9 +37,10 @@ const styles = (theme) => ({
     }
   },
   icon: {
-    width: 32,
+    minWidth: 32,
     display: "flex",
     justifyContent: "center",
+    marginRight: theme.spacing(2),
     color: theme.palette.colors.coolGrey300
   },
   iconActive: {
@@ -47,27 +48,40 @@ const styles = (theme) => ({
   },
   shopLogo: {
     flex: 1,
-    marginRight: theme.spacing.unit * 2
+    marginRight: theme.spacing(2)
   },
   toolbar: {
-    paddingLeft: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
   },
   listItem: {
-    paddingLeft: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2
+    "paddingLeft": theme.spacing(2),
+    "paddingRight": theme.spacing(2),
+    "&:hover": {
+      backgroundColor: theme.palette.colors.darkBlue600,
+      transition: `background-color ${theme.transitions.duration.shortest} ${theme.transitions.easing.easeInOut}`
+    }
   },
   listItemText: {
-    paddingLeft: 0
+    paddingLeft: 0,
+    fontSize: theme.typography.fontSize,
+    lineHeight: 1.5,
+    letterSpacing: 0.5,
+    color: theme.palette.colors.black15
   },
   listItemNested: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    paddingLeft: theme.spacing.unit * 8
+    "paddingTop": 0,
+    "paddingBottom": 0,
+    "paddingLeft": theme.spacing(8),
+    "&:hover": {
+      backgroundColor: theme.palette.colors.darkBlue600,
+      transition: `background-color ${theme.transitions.duration.shortest} ${theme.transitions.easing.easeInOut}`
+    }
   },
   link: {
     [`&.${activeClassName} span`]: {
-      color: theme.palette.text.secondaryActive
+      color: theme.palette.text.secondaryActive,
+      fontWeight: theme.typography.fontWeightSemiBold
     },
     [`&.${activeClassName} $icon`]: {
       color: theme.palette.text.active
@@ -150,11 +164,8 @@ function Sidebar(props) {
                 {route.SidebarIconComponent && <route.SidebarIconComponent />}
               </ListItemIcon>
               <ListItemText
+                disableTypography
                 className={classes.listItemText}
-                primaryTypographyProps={{
-                  color: "textSecondary",
-                  variant: "body1"
-                }}
               >
                 <Translation defaultValue="" i18nKey={route.sidebarI18nLabel} />
               </ListItemText>
@@ -181,13 +192,10 @@ function Sidebar(props) {
             <SettingsIcon />
           </ListItemIcon>
           <ListItemText
+            disableTypography
             className={classes.listItemText}
-            primaryTypographyProps={{
-              color: "textSecondary",
-              variant: "body1"
-            }}
           >
-            <Translation defaultValue="Settings" i18nKey={"app.settings"} />
+            <Translation i18nKey={"app.settings"} />
           </ListItemText>
         </ListItem>
 
@@ -202,11 +210,8 @@ function Sidebar(props) {
             >
               <ListItem button className={classes.listItemNested}>
                 <ListItemText
+                  disableTypography
                   className={classes.listItemText}
-                  primaryTypographyProps={{
-                    color: "textSecondary",
-                    variant: "body1"
-                  }}
                 >
                   <Translation defaultValue="" i18nKey={route.sidebarI18nLabel} />
                 </ListItemText>

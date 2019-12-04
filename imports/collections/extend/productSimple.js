@@ -3,6 +3,9 @@ import SimpleSchema from "simpl-schema";
 const SystemSchema = new SimpleSchema({
   originId: {
     type: String
+  },
+  weight: {
+    type: String
   }
 });
 
@@ -206,6 +209,20 @@ const OptionsSchema = new SimpleSchema({
     optional: true
   },
   "images.$.original": {
+    type: String,
+    optional: true
+  },
+  "price": {
+    type: Object,
+    optional: true
+  },
+  "price.EUR": {
+    type: Object,
+    optional: true
+  },
+  "price.EUR.min": Number,
+  "price.EUR.max": Number,
+  "price.EUR.range": {
     type: String,
     optional: true
   }

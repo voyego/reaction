@@ -1,16 +1,9 @@
-import addressBookRemove from "./addressBookRemove";
-import addressBookUpdate from "./addressBookUpdate";
 import addUserPermissions from "./addUserPermissions";
 import createFallbackLoginToken from "./createFallbackLoginToken";
 import getUserId from "./getUserId";
 import groupMethods from "./group";
-import inviteShopMember from "./inviteShopMember";
-import inviteShopOwner from "./inviteShopOwner";
-import removeEmailAddress from "./removeEmailAddress";
 import removeUserPermissions from "./removeUserPermissions";
-import sendResetPasswordEmail from "./sendResetPasswordEmail";
 import setActiveShopId from "./setActiveShopId";
-import setProfileCurrency from "./setProfileCurrency";
 import setProfileLanguage from "./setProfileLanguage";
 import setUserPermissions from "./setUserPermissions";
 import updateEmailAddress from "./updateEmailAddress";
@@ -32,17 +25,11 @@ import verifyAccount from "./verifyAccount";
 */
 
 export default {
-  "accounts/addressBookRemove": addressBookRemove,
-  "accounts/addressBookUpdate": addressBookUpdate,
   "accounts/addUserPermissions": addUserPermissions,
   "accounts/createFallbackLoginToken": createFallbackLoginToken,
-  "accounts/inviteShopMember": inviteShopMember,
-  "accounts/inviteShopOwner": inviteShopOwner,
-  "accounts/removeEmailAddress": removeEmailAddress,
   "accounts/removeUserPermissions": removeUserPermissions,
-  "accounts/sendResetPasswordEmail": sendResetPasswordEmail,
+  // TODO voyego: remove meteor functions accounts/sendResetPasswordEmail, accounts/setProfileCurrency, accounts/setProfileLanguage
   "accounts/setActiveShopId": setActiveShopId,
-  "accounts/setProfileCurrency": setProfileCurrency,
   "accounts/setProfileLanguage": setProfileLanguage,
   "accounts/setUserPermissions": setUserPermissions,
   "accounts/updateEmailAddress": updateEmailAddress,

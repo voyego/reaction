@@ -1,8 +1,3 @@
-import { getHasPermissionFunctionForUser } from "/imports/plugins/core/accounts/server/no-meteor/hasPermission";
-import { getShopsUserHasPermissionForFunctionForUser } from "/imports/plugins/core/accounts/server/no-meteor/shopsUserHasPermissionFor";
-import getRootUrl from "/imports/plugins/core/core/server/util/getRootUrl";
-import getAbsoluteUrl from "/imports/plugins/core/core/server/util/getAbsoluteUrl";
-
 /**
  * @name buildContext
  * @method
@@ -26,23 +21,31 @@ export default async function buildContext(context, request = {}) {
   const userId = (context.user && context.user._id) || null;
   context.userId = userId;
 
-  if (userId) {
-    const account = await context.collections.Accounts.findOne({ userId });
-    context.account = account;
-    context.accountId = (account && account._id) || null;
+  let account;
+  if (userId && typeof context.auth.accountByUserId === "function") {
+    account = await context.auth.accountByUserId(context, userId);
   }
+
+  context.account = account || null;
+  context.accountId = (account && account._id) || null;
 
   // DEPRECATED. Client requests should include a shopId if one is needed.
   context.shopId = await context.queries.primaryShopId(context.collections);
 
-  // Add a curried hasPermission tied to the current user (or to no user)
-  context.userHasPermission = getHasPermissionFunctionForUser(context.user);
+  if (typeof context.auth.getHasPermissionFunctionForUser === "function") {
+    context.userHasPermission = await context.auth.getHasPermissionFunctionForUser(context);
+  }
+  if (typeof context.auth.getShopsUserHasPermissionForFunctionForUser === "function") {
+    context.shopsUserHasPermissionFor = await context.auth.getShopsUserHasPermissionForFunctionForUser(context);
+  }
 
-  // Add array of all shopsIds user has permissions for
-  context.shopsUserHasPermissionFor = getShopsUserHasPermissionForFunctionForUser(context.user);
+  // Make some request headers available to resolvers on context, but remove any
+  // with potentially sensitive information in them.
+  context.requestHeaders = { ...request.headers };
+  delete context.requestHeaders.authorization;
+  delete context.requestHeaders.cookie;
+  delete context.requestHeaders["meteor-login-token"];
 
-  context.rootUrl = getRootUrl(request);
-  context.getAbsoluteUrl = (path) => getAbsoluteUrl(context.rootUrl, path);
-
-  context.requestHeaders = request.headers;
+  // Reset isInternalCall in case it has been incorrectly changed
+  context.isInternalCall = false;
 }

@@ -1,6 +1,6 @@
 import { Migrations } from "meteor/percolate:migrations";
+import hashToken from "@reactioncommerce/api-utils/hashToken.js";
 import { Accounts, Cart } from "/lib/collections";
-import hashLoginToken from "/imports/node-app/core/util/hashLoginToken";
 
 // Do this migration in batches of 200 to avoid memory issues
 const LIMIT = 200;
@@ -8,7 +8,7 @@ const LIMIT = 200;
 /**
  * @private
  * @param {String} currencyCode The currency code
- * @return {Function} A map function for converting cart items
+ * @returns {Function} A map function for converting cart items
  */
 function getConvertCartItemUp(currencyCode) {
   return (item) => {
@@ -57,7 +57,7 @@ function convertCartUp(cart) {
 
   const account = cart.userId ? Accounts.findOne({ userId: cart.userId }) : null;
   const accountId = (account && account._id) || null;
-  const anonymousAccessToken = cart.sessionId ? hashLoginToken(cart.sessionId) : null;
+  const anonymousAccessToken = cart.sessionId ? hashToken(cart.sessionId) : null;
 
   Cart.update({ _id: cart._id }, {
     $set: {
@@ -75,7 +75,7 @@ function convertCartUp(cart) {
 /**
  * @private
  * @param {Object} item The cart item
- * @return {Object} Converted cart item
+ * @returns {Object} Converted cart item
  */
 function convertCartItemDown(item) {
   const newItem = {

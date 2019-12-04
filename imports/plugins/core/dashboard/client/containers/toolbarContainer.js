@@ -1,29 +1,8 @@
 import React from "react";
-import { Meteor } from "meteor/meteor";
-import { Session } from "meteor/session";
 import { composeWithTracker } from "@reactioncommerce/reaction-components";
 import { Reaction, i18next } from "/client/api";
-import ReactionError from "@reactioncommerce/reaction-error";
 import { Shops } from "/lib/collections";
 import { AdminContextProvider } from "/imports/plugins/core/ui/client/providers";
-
-const handleAddProduct = () => {
-  Meteor.call("products/createProduct", (error, productId) => {
-    if (Meteor.isClient) {
-      if (error) {
-        throw new ReactionError("create-product-error", error);
-      }
-
-      if (productId) {
-        Session.set("productGrid/selectedProducts", [productId]);
-        // go to new product
-        Reaction.Router.go("product", {
-          handle: productId
-        });
-      }
-    }
-  });
-};
 
 /**
  * @summary Handler that fires when the shop selector is changed
@@ -82,17 +61,26 @@ function composer(props, onData) {
     dashboardHeaderTemplate: props.data.dashboardHeader,
     isActionViewAtRootView: Reaction.isActionViewAtRootView(),
     actionViewIsOpen: Reaction.isActionViewOpen(),
-    hasCreateProductAccess: Reaction.hasPermission("createProduct", Reaction.getUserId(), Reaction.getShopId()),
+    hasCreateProductAccess: Reaction.hasPermission(["createProduct", "product/admin", "product/create"], Reaction.getUserId(), Reaction.getShopId()),
     shopId: Reaction.getShopId(),
     shops,
 
     // Callbacks
-    onAddProduct: handleAddProduct,
     onShopSelectChange: handleShopSelectChange
   });
 }
 
+/**
+ * @name ToolbarContainer
+ * @param {React.Component} Comp wrapped component
+ * @returns {React.Component} returns a React component
+ */
 export default function ToolbarContainer(Comp) {
+  /**
+   * @name CompositeComponent
+   * @param {Object} props Component props
+   * @returns {React.Component} Wrapped Toolbar component
+   */
   function CompositeComponent(props) {
     return (
       <AdminContextProvider>

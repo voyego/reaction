@@ -1,12 +1,10 @@
 import Logger from "@reactioncommerce/logger";
-import packageJson from "/package.json";
 import _ from "lodash";
 import { Meteor } from "meteor/meteor";
 import { check } from "meteor/check";
 import { Roles } from "meteor/alanning:roles";
 import * as Collections from "/lib/collections";
 import ConnectionDataStore from "/imports/plugins/core/core/server/util/connectionDataStore";
-import { registerTemplate } from "./templates";
 import { AbsoluteUrlMixin } from "./absoluteUrl";
 import { getUserId } from "./accountUtils";
 /**
@@ -27,7 +25,7 @@ export default {
    * @summary This is used only for the old `registerPackage` in this file. After that is removed,
    *   this likely can be removed, too.
    * @param {ReactionNodeApp} app App instance
-   * @return {undefined}
+   * @returns {undefined}
    */
   async onAppInstanceCreated(app) {
     this.reactionNodeApp = app;
@@ -43,7 +41,7 @@ export default {
    * @summary This is used only for the old `registerPackage` in this file. After that is removed,
    *   this likely can be removed, too.
    * @param {Function} callback Function to call after `this.reactionNodeApp` is set, which might be immediately
-   * @return {undefined}
+   * @returns {undefined}
    */
   whenAppInstanceReady(callback) {
     if (this.reactionNodeApp) {
@@ -57,7 +55,7 @@ export default {
   /**
    * @summary Called to indicate that startup is done, causing all
    *   `onAppStartupComplete` callbacks to run in series.
-   * @return {undefined}
+   * @returns {undefined}
    */
   async emitAppStartupComplete() {
     if (this.appStartupIsComplete) return;
@@ -74,7 +72,7 @@ export default {
    * @summary Register a function to be called once after the app startup is
    *   fully done running.
    * @param {Function} callback Function to call after app startup, which might be immediately
-   * @return {undefined}
+   * @returns {undefined}
    */
   onAppStartupComplete(callback) {
     if (this.appStartupIsComplete) {
@@ -88,7 +86,7 @@ export default {
   /**
    * @deprecated Use `app.registerPlugin` pattern instead. See the simple-pricing plugin.
    * @param {Object} packageInfo Plugin options
-   * @return {Object} Plugin options
+   * @returns {Object} Plugin options
    */
   registerPackage(packageInfo) {
     this.whenAppInstanceReady((app) => app.registerPlugin(packageInfo));
@@ -105,7 +103,7 @@ export default {
    * @param {Object} options -
    * @param {Object} options.group - group to invite to
    * @param {Object} options.user - user object  making the invite (Meteor.user())
-   * @return {Boolean} -
+   * @returns {Boolean} -
    */
   canInviteToGroup(options) {
     const { group } = options;
@@ -127,15 +125,6 @@ export default {
   },
 
   /**
-   * @name registerTemplate
-   * @method
-   * @memberof Core
-   * @summary Registers Templates into the Templates Collection
-   * @return {function} Registers template
-   */
-  registerTemplate,
-
-  /**
    * @name hasPermission
    * @method
    * @memberof Core
@@ -143,7 +132,7 @@ export default {
    * @param {String | Array} checkPermissions -String or Array of permissions if empty, defaults to "admin, owner"
    * @param {String} userId - userId, defaults to logged in userId
    * @param {String} checkGroup group - default to shopId
-   * @return {Boolean} Boolean - true if has permission
+   * @returns {Boolean} Boolean - true if has permission
    */
   hasPermission(checkPermissions, userId = getUserId(), checkGroup = this.getShopId()) {
     // check(checkPermissions, Match.OneOf(String, Array)); check(userId, String); check(checkGroup,
@@ -178,7 +167,7 @@ export default {
    * @name hasOwnerAccess
    * @method
    * @memberof Core
-   * @return {Boolean} Boolean - true if has permission
+   * @returns {Boolean} Boolean - true if has permission
    */
   hasOwnerAccess() {
     return this.hasPermission(["owner"]);
@@ -188,7 +177,7 @@ export default {
    * @name hasAdminAccess
    * @method
    * @memberof Core
-   * @return {Boolean} Boolean - true if has permission
+   * @returns {Boolean} Boolean - true if has permission
    */
   hasAdminAccess() {
     return this.hasPermission(["owner", "admin"]);
@@ -198,7 +187,7 @@ export default {
    * @name hasDashboardAccess
    * @method
    * @memberof Core
-   * @return {Boolean} Boolean - true if has permission
+   * @returns {Boolean} Boolean - true if has permission
    */
   hasDashboardAccess() {
     return this.hasPermission(["owner", "admin", "dashboard"]);
@@ -212,7 +201,7 @@ export default {
    * @param  {array} roles an array of roles to check. Will return a shopId if the user has _any_ of the roles
    * @param  {string} userId Optional userId, defaults to logged in userId
    *                                           Must pass this.userId from publications to avoid error!
-   * @return {array} Array of shopIds that the user has at least one of the given set of roles for
+   * @returns {Array} Array of shopIds that the user has at least one of the given set of roles for
    */
   getShopsWithRoles(roles, userId = getUserId()) {
     // Owner permission for a shop supersedes grantable permissions, so we always check for owner permissions as well
@@ -238,7 +227,7 @@ export default {
    * @name getSellerShopId
    * @method
    * @memberof Core
-   * @return {String} Shop ID
+   * @returns {String} Shop ID
    */
   getSellerShopId() {
     return Roles.getGroupsForUser(this.userId, "admin");
@@ -250,7 +239,7 @@ export default {
    * and can see all other shops
    * @method
    * @memberof Core
-   * @return {Object} Shop
+   * @returns {Object} Shop
    */
   getPrimaryShop() {
     const primaryShop = Shops.findOne({
@@ -266,7 +255,7 @@ export default {
    * and can see all other shops
    * @method
    * @memberof Core
-   * @return {String} ID
+   * @returns {String} ID
    */
   getPrimaryShopId() {
     const primaryShop = this.getPrimaryShop();
@@ -281,7 +270,7 @@ export default {
    * @method
    * @summary Get primary shop name or empty string
    * @memberof Core
-   * @return {String} Return shop name or empty string
+   * @returns {String} Return shop name or empty string
    */
   getPrimaryShopName() {
     const primaryShop = this.getPrimaryShop();
@@ -297,7 +286,7 @@ export default {
    * @memberof Core
    * @method
    * @todo Primary Shop should probably not have a prefix (or should it be /shop?)
-   * @return {String} Prefix in the format of "/<slug>"
+   * @returns {String} Prefix in the format of "/<slug>"
    */
   getPrimaryShopPrefix() {
     return `/${this.getSlug(this.getPrimaryShopName().toLowerCase())}`;
@@ -308,7 +297,7 @@ export default {
    * @method
    * @memberof Core
    * @summary Get primary shop settings object
-   * @return {Object} Get settings object or empty object
+   * @returns {Object} Get settings object or empty object
    */
   getPrimaryShopSettings() {
     const settings = Packages.findOne({
@@ -319,29 +308,12 @@ export default {
   },
 
   /**
-   * @name getPrimaryShopCurrency
-   * @method
-   * @memberof Core
-   * @summary Get primary shop currency string
-   * @return {String} Get shop currency or "USD"
-   */
-  getPrimaryShopCurrency() {
-    const primaryShop = this.getPrimaryShop();
-
-    if (primaryShop && primaryShop.currency) {
-      return primaryShop.currency;
-    }
-
-    return "USD";
-  },
-
-  /**
    * @summary **DEPRECATED** This method has been deprecated in favor of using getShopId
    * and getPrimaryShopId. To be removed.
    * @deprecated
    * @memberof Core
    * @method getCurrentShopCursor
-   * @return {Cursor} cursor of shops that match the current domain
+   * @returns {Cursor} cursor of shops that match the current domain
    */
   getCurrentShopCursor() {
     const domain = this.getDomain();
@@ -360,7 +332,7 @@ export default {
    * @deprecated
    * @memberof Core
    * @method getCurrentShop
-   * @return {Object} returns the first shop object from the shop cursor
+   * @returns {Object} returns the first shop object from the shop cursor
    */
   getCurrentShop() {
     const currentShopCursor = this.getCurrentShopCursor();
@@ -378,7 +350,7 @@ export default {
    * @summary Get shop ID, first by checking the current user's preferences
    * then by getting the shop by the current domain.
    * @todo should we return the Primary Shop if none found?
-   * @return {String} active shop ID
+   * @returns {String} active shop ID
    */
   getShopId() {
     // is there a stored value?
@@ -422,7 +394,7 @@ export default {
    * @memberof Core
    * @summary allows the client to trigger an uncached lookup of the shopId.
    *          this is useful when a user switches shops.
-   * @return {undefined}
+   * @returns {undefined}
    */
   resetShopId() {
     ConnectionDataStore.clear("shopId");
@@ -433,7 +405,7 @@ export default {
    * @summary Whether the current shop is the Primary Shop (vs a Merchant Shop)
    * @method
    * @memberof Core
-   * @return {Boolean} whether shop is flagged as primary
+   * @returns {Boolean} whether shop is flagged as primary
    */
   isShopPrimary() {
     return this.getShopId() === this.getPrimaryShopId();
@@ -444,7 +416,7 @@ export default {
    * @method
    * @memberof Core
    * @summary searches for a shop which should be used given the current domain
-   * @return {StringId} shopId
+   * @returns {StringId} shopId
    */
   getShopIdByDomain() {
     const domain = this.getDomain();
@@ -475,7 +447,7 @@ export default {
    * @memberof Core
    * @summary Get a user's shop ID, as stored in preferences
    * @param {String} userId (probably logged in userId)
-   * @return {String} active shop ID
+   * @returns {String} active shop ID
    */
   getUserShopId(userId) {
     check(userId, String);
@@ -491,7 +463,7 @@ export default {
    * @method
    * @memberof Core
    * @summary Get the correct shop ID to use for Cart collection
-   * @return {StringId} The primary or current shop ID, depending on merchantCart setting
+   * @returns {StringId} The primary or current shop ID, depending on merchantCart setting
    */
   getCartShopId() {
     const marketplaceSettings = this.getMarketplaceSettings();
@@ -509,7 +481,7 @@ export default {
    * @method
    * @memberof Core
    * @summary If we can't find the shop or shop name return an empty string
-   * @return {String} Shop name or empty string ""
+   * @returns {String} Shop name or empty string ""
    */
   getShopName() {
     const shopId = this.getShopId();
@@ -539,33 +511,11 @@ export default {
   },
 
   /**
-   * @name getShopPrefix
-   * @method
-   * @memberof Core
-   * @summary Get shop prefix for URL
-   * @return {String} String in the format of "/shop/slug"
-   */
-  getShopPrefix() {
-    const shopName = this.getShopName();
-    const lowerCaseShopName = shopName.toLowerCase();
-    const slug = this.getSlug(lowerCaseShopName);
-    const marketplace = Packages.findOne({
-      name: "reaction-marketplace",
-      shopId: this.getPrimaryShopId()
-    });
-
-    if (marketplace && marketplace.settings && marketplace.settings.public) {
-      return `${marketplace.settings.public.shopPrefix}/${slug}`;
-    }
-    return `/${slug}`;
-  },
-
-  /**
    * @name getShopEmail
    * @method
    * @memberof Core
    * @summary Get shop email
-   * @return {String} String with the first store email
+   * @returns {String} String with the first store email
    */
   getShopEmail() {
     const shop = Shops.find({
@@ -585,7 +535,7 @@ export default {
    * @memberof Core
    * @summary Get shop settings object
    * @param  {String} [name="core"] Package name
-   * @return {Object}               Shop settings object or empty object
+   * @returns {Object}               Shop settings object or empty object
    */
   getShopSettings(name = "core") {
     const settings = Packages.findOne({ name, shopId: this.getShopId() }) || {};
@@ -597,7 +547,7 @@ export default {
    * @method
    * @memberof Core
    * @summary Get shop currency
-   * @return {String} Shop currency or "USD"
+   * @returns {String} Shop currency or "USD"
    */
   getShopCurrency() {
     const shop = Shops.findOne({
@@ -612,7 +562,7 @@ export default {
    * @method
    * @memberof Core
    * @summary Get all currencies available to a shop
-   * @return {Object} Shop currency or "USD"
+   * @returns {Object} Shop currency or "USD"
    */
   getShopCurrencies() {
     const shop = Shops.findOne({
@@ -628,7 +578,7 @@ export default {
    * @memberof Core
    * @todo TODO: Marketplace - should each shop set their own default language or
    * should the Marketplace set a language that's picked up by all shops?
-   * @return {String} language
+   * @returns {String} language
    */
   getShopLanguage() {
     const { language } = Shops.findOne({
@@ -647,7 +597,7 @@ export default {
    * @memberof Core
    * @summary Get package settings
    * @param  {String} name Package name
-   * @return {Object|null}      Package setting object or null
+   * @returns {Object|null}      Package setting object or null
    */
   getPackageSettings(name) {
     return Packages.findOne({ name, shopId: this.getShopId() }) || null;
@@ -659,7 +609,7 @@ export default {
    * @memberof Core
    * @summary finds the enabled `reaction-marketplace` package for
    * the primary shop and returns the settings
-   * @return {Object} The marketplace settings from the primary shop or undefined
+   * @returns {Object} The marketplace settings from the primary shop or undefined
    */
   getMarketplaceSettings() {
     const marketplace = Packages.findOne({
@@ -675,35 +625,13 @@ export default {
   },
 
   /**
-   * @name getAppVersion
-   * @method
-   * @memberof Core
-   * @return {String} App version
-   */
-  getAppVersion() {
-    return Shops.findOne().appVersion;
-  },
-
-  /**
-   * @name setAppVersion
-   * @method
-   * @memberof Core
-   * @return {undefined} no return value
-   */
-  setAppVersion() {
-    const { version } = packageJson;
-    Logger.info(`Reaction Version: ${version}`);
-    Shops.update({}, { $set: { appVersion: version } }, { multi: true });
-  },
-
-  /**
    * @summary Method for getting all schemas attached to a given collection
    * @deprecated by simpl-schema
    * @private
    * @name collectionSchema
    * @param  {string} collection The mongo collection to get schemas for
    * @param  {Object} [selector] Optional selector for multi schema collections
-   * @return {Object} Returns a simpleSchema that is a combination of all schemas
+   * @returns {Object} Returns a simpleSchema that is a combination of all schemas
    *                  that have been attached to the collection or false if
    *                  the collection or schema could not be found
    */

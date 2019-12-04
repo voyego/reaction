@@ -45,7 +45,8 @@ const wrapComponent = (Comp) => (
       }, 500);
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line camelcase
+    UNSAFE_componentWillReceiveProps(nextProps) {
       this.setState({
         tagIds: nextProps.tagIds || [],
         tagsByKey: nextProps.tagsByKey || {}
@@ -221,6 +222,12 @@ const wrapComponent = (Comp) => (
   }
 );
 
+/**
+ * @private
+ * @param {Object} props Props
+ * @param {Function} onData Call this to update props
+ * @returns {undefined}
+ */
 function composer(props, onData) {
   let { tags } = props;
 

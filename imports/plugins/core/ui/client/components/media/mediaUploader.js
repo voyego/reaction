@@ -1,86 +1,119 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import Dropzone from "react-dropzone";
+import gql from "graphql-tag";
+import { useDropzone } from "react-dropzone";
+import { useMutation } from "@apollo/react-hooks";
+import Button from "@reactioncommerce/catalyst/Button";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import { FileRecord } from "@reactioncommerce/file-collections";
-import { Components, registerComponent } from "@reactioncommerce/reaction-components";
-import { Logger } from "/client/api";
-import { Media } from "/imports/plugins/core/files/client";
+import { registerComponent } from "@reactioncommerce/reaction-components";
+import { i18next, Logger } from "/client/api";
 
-class MediaUploader extends Component {
-  static propTypes = {
-    metadata: PropTypes.object
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isUploading: false
-    };
+const createMediaRecordMutation = gql`
+  mutation CreateMediaRecord($input: CreateMediaRecordInput!) {
+    createMediaRecord(input: $input) {
+      mediaRecord {
+        _id
+      }
+    }
   }
+`;
 
-  componentDidMount() {
-    this._isMounted = true;
-  }
+/**
+ * MediaUploader
+ * @param {Object} props Component props
+ * @returns {Node} React component
+ */
+function MediaUploader(props) {
+  const { canUploadMultiple, metadata, onError, onFiles, shopId } = props;
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
+  const [isUploading, setIsUploading] = useState(false);
+  const [createMediaRecord] = useMutation(createMediaRecordMutation, { ignoreResults: true });
 
-  uploadFiles = (acceptedFiles) => {
-    const { metadata } = this.props;
+  const uploadFiles = (acceptedFiles) => {
     const filesArray = Array.from(acceptedFiles);
-    if (filesArray.length === 0) return;
 
-    this.setState({ isUploading: true });
+    setIsUploading(true);
 
-    const promises = [];
-    filesArray.forEach((browserFile) => {
+    const promises = filesArray.map(async (browserFile) => {
       const fileRecord = FileRecord.fromFile(browserFile);
 
-      if (metadata) fileRecord.metadata = metadata;
+      if (metadata) {
+        if (typeof metadata === "function") {
+          fileRecord.metadata = metadata();
+        } else {
+          fileRecord.metadata = metadata;
+        }
+      }
 
-      const promise = fileRecord.upload({})
-        // We insert only AFTER the server has confirmed that all chunks were uploaded
-        .then(() => Media.insert(fileRecord))
-        .catch((error) => {
-          Logger.error(error);
-        });
+      await fileRecord.upload({});
 
-      promises.push(promise);
+      // We insert only AFTER the server has confirmed that all chunks were uploaded
+      return createMediaRecord({
+        variables: {
+          input: {
+            mediaRecord: fileRecord.document,
+            shopId
+          }
+        }
+      });
     });
 
     Promise.all(promises)
       .then(() => {
-        if (!this._isMounted) return null;
-        this.setState({ isUploading: false });
+        setIsUploading(false);
         return null;
       })
       .catch((error) => {
-        Logger.error(error);
+        setIsUploading(false);
+        if (onError) {
+          onError(error);
+        } else {
+          Logger.error(error);
+        }
       });
   };
 
-  render() {
-    const { isUploading } = this.state;
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: "image/jpg, image/png, image/jpeg",
+    disableClick: true,
+    disablePreview: true,
+    multiple: canUploadMultiple,
+    onDrop(files) {
+      if (files.length === 0) return;
 
-    return (
-      <Dropzone
-        accept="image/jpg, image/png, image/jpeg"
-        className="rui button btn btn-default btn-block"
-        disabled={!!isUploading}
-        onDrop={this.uploadFiles}
-      >
-        <div className="contents">
-          {!!isUploading && <div style={{ marginLeft: "auto", marginRight: "auto" }}><Components.CircularProgress indeterminate={true} /></div>}
-          {!isUploading && <span className="title">
-            <Components.Translation defaultValue="Click or drop images here to upload media" i18nKey="mediaUploader.dropFiles" />
-          </span>}
-        </div>
-      </Dropzone>
-    );
-  }
+      // Pass onFiles func to circumvent default uploader
+      if (onFiles) {
+        onFiles(files);
+      } else {
+        uploadFiles(files);
+      }
+    }
+  });
+
+  return (
+    <div {...getRootProps({ className: "dropzone" })}>
+      <input {...getInputProps()} />
+      {isUploading ?
+        <LinearProgress />
+        :
+        <Button fullWidth size="large" variant="outlined">{i18next.t("reactionUI.components.mediaUploader.dropFiles")}</Button>
+      }
+    </div>
+  );
 }
+
+MediaUploader.propTypes = {
+  canUploadMultiple: PropTypes.bool,
+  metadata: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  onError: PropTypes.func,
+  onFiles: PropTypes.func,
+  shopId: PropTypes.string
+};
+
+MediaUploader.defaultProps = {
+  canUploadMultiple: false
+};
 
 registerComponent("MediaUploader", MediaUploader);
 
