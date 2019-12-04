@@ -1,10 +1,10 @@
+import _ from "lodash";
 import Random from "@reactioncommerce/random";
 import { Meteor } from "meteor/meteor";
 import { Accounts as MeteorAccounts } from "meteor/accounts-base";
 import { check, Match } from "meteor/check";
 import { Accounts } from "/lib/collections";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
-import getGraphQLContextInMeteorMethod from "/imports/plugins/core/graphql/server/getGraphQLContextInMeteorMethod";
 import ReactionError from "@reactioncommerce/reaction-error";
 import getCurrentUserName from "../no-meteor/util/getCurrentUserName";
 import getDataForEmail from "../util/getDataForEmail";
@@ -52,7 +52,8 @@ export default function inviteShopOwner(options, shopData) {
   const primaryShop = Reaction.getPrimaryShop();
 
   // Compile Email with SSR
-  const templateName = "accounts/inviteShopOwner";
+  const tpl = "accounts/inviteShopOwner";
+  const subject = "accounts/inviteShopOwner/subject";
 
   const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
   const language = account && account.profile && account.profile.language;
@@ -60,7 +61,7 @@ export default function inviteShopOwner(options, shopData) {
   const currentUser = Meteor.user();
   const currentUserName = getCurrentUserName(currentUser);
   // uses primaryShop's data (name, address etc) in email copy sent to new merchant
-  const dataForEmail = getDataForEmail({ shop: primaryShop, currentUserName, name, token });
+  const dataForEmail = getDataForEmail({ shop: primaryShop, currentUserName, name, token, emailLogo });
 
   // 1) this should only be for new users, right?
   // 2) this doesn't happen automatically on new user creation?

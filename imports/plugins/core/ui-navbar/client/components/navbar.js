@@ -46,22 +46,6 @@ class NavBar extends Component {
     this.setState({ searchModalOpen: false });
   }
 
-  renderLanguage() {
-    return (
-      <div className="languages">
-        <Components.LanguageDropdown />
-      </div>
-    );
-  }
-
-  renderCurrency() {
-    return (
-      <div className="currencies">
-        <Components.CurrencyDropdown />
-      </div>
-    );
-  }
-
   renderBrand() {
     const { brandMedia, shop } = this.props;
 
@@ -92,6 +76,8 @@ class NavBar extends Component {
         </div>
       );
     }
+
+    return null;
   }
 
   renderNotificationIcon() {
@@ -102,6 +88,8 @@ class NavBar extends Component {
         </div>
       );
     }
+
+    return null;
   }
 
   renderMainDropdown() {
@@ -125,8 +113,6 @@ class NavBar extends Component {
       >
         <Components.Brand />
         {this.renderNotificationIcon()}
-        {this.renderLanguage()}
-        {this.renderCurrency()}
       </Components.TagNav>
     );
   }
@@ -141,7 +127,6 @@ class NavBar extends Component {
         </header>
         {this.props.visibility.search && this.renderSearchButton()}
         {this.props.visibility.notifications && this.renderNotificationIcon()}
-        {this.props.visibility.languages && this.renderLanguage()}
         {this.props.visibility.currency && this.renderCurrency()}
         {this.props.visibility.mainDropdown && this.renderMainDropdown()}
       </div>

@@ -139,6 +139,10 @@ export const ProductVariant = new SimpleSchema({
     optional: true,
     defaultValue: 0
   },
+  "isTaxable": Boolean,
+  "taxCode": String,
+  "compareAtPrice": Number,
+  "price": Number,
   "metafields": {
     type: Array,
     optional: true
@@ -230,7 +234,7 @@ registerSchema("ProductVariant", ProductVariant);
  * @property {String} description optional
  * @property {String} facebookMsg optional
  * @property {String} googleplusMsg optional
- * @property {String} handle optional, slug
+ * @property {String} handle slug
  * @property {String[]} hashtags optional
  * @property {Boolean} isDeleted, default value: `false`
  * @property {Boolean} isVisible, default value: `false`
@@ -290,7 +294,8 @@ export const Product = new SimpleSchema({
   },
   "handle": {
     type: String,
-    optional: true
+    defaultValue: "",
+    label: "Permalink"
   },
   "hashtags": {
     type: Array,
@@ -308,6 +313,16 @@ export const Product = new SimpleSchema({
     defaultValue: false
   },
   "metaDescription": {
+    type: String,
+    optional: true
+  },
+  "price": {
+    type: Object,
+    optional: true
+  },
+  "price.min": Number,
+  "price.max": Number,
+  "price.range": {
     type: String,
     optional: true
   },

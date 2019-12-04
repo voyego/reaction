@@ -7,7 +7,6 @@ import { Meteor } from "meteor/meteor";
 import { Accounts, Shops } from "/lib/collections";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 import getGraphQLContextInMeteorMethod from "/imports/plugins/core/graphql/server/getGraphQLContextInMeteorMethod";
-import ReactionError from "@reactioncommerce/reaction-error";
 
 MeteorAccounts.urls.resetPassword = function reset(token) {
   return Meteor.absoluteUrl(`reset-password/${token}`);
@@ -21,9 +20,10 @@ MeteorAccounts.urls.resetPassword = function reset(token) {
  * @param {String} [optionalEmail] Address to send the email to.
  *                 This address must be in the user's `emails` list.
  *                 Defaults to the first email in the list.
- * @return {Job} - returns a sendEmail Job instance
+ * @param {String} language - user prefered language i18n
+ * @returns {Job} - returns a sendEmail Job instance
  */
-async function sendResetEmail(userId, optionalEmail) {
+async function sendResetEmail(userId, optionalEmail, language) {
   // Make sure the user exists, and email is one of their addresses.
   const user = Meteor.users.findOne(userId);
 
@@ -46,9 +46,7 @@ async function sendResetEmail(userId, optionalEmail) {
   }
 
   // Create token for password reset
-  const token = Random.secret();
-  const when = new Date();
-  const tokenObj = { token, email, when };
+  const tokenObj = generateVerificationTokenObject({ email });
 
   Meteor.users.update(userId, {
     $set: {
@@ -133,9 +131,11 @@ export default function sendResetPasswordEmail(options) {
     throw new ReactionError("not-found", "User not found");
   }
 
+  const language = user.profile && user.profile.language;
+
   const emails = _.map(user.emails || [], "address");
 
   const caseInsensitiveEmail = _.find(emails, (email) => email.toLowerCase() === options.email.toLowerCase());
 
-  sendResetEmail(user._id, caseInsensitiveEmail);
+  sendResetEmail(user._id, caseInsensitiveEmail, language);
 }

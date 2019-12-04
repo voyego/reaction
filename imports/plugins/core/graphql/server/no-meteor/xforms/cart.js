@@ -1,7 +1,7 @@
-import { namespaces } from "@reactioncommerce/reaction-graphql-utils";
+import getRateObjectForRate from "@reactioncommerce/api-utils/getRateObjectForRate.js";
+import namespaces from "@reactioncommerce/api-utils/graphql/namespaces.js";
 import ReactionError from "@reactioncommerce/reaction-error";
 import { xformCatalogProductMedia } from "./catalogProduct";
-import { xformRateToRateObject } from "./core";
 import { assocInternalId, assocOpaqueId, decodeOpaqueIdForNamespace, encodeOpaqueId } from "./id";
 import { decodeProductOpaqueId } from "./product";
 
@@ -22,7 +22,7 @@ export const encodeFulfillmentGroupOpaqueId = encodeOpaqueId(namespaces.Fulfillm
 
 /**
  * @param {Object[]} items Array of CartItemInput
- * @return {Object[]} Same array with all IDs transformed to internal
+ * @returns {Object[]} Same array with all IDs transformed to internal
  */
 export function decodeCartItemsOpaqueIds(items) {
   return items.map((item) => ({
@@ -39,7 +39,7 @@ export function decodeCartItemsOpaqueIds(items) {
  * @param {Object[]} catalogItems Array of CatalogItem docs from the db
  * @param {Object[]} products Array of Product docs from the db
  * @param {Object} cartItem CartItem
- * @return {Object} Same object with GraphQL-only props added
+ * @returns {Object} Same object with GraphQL-only props added
  */
 async function xformCartItem(context, catalogItems, products, cartItem) {
   const { productId, variantId } = cartItem;
@@ -84,7 +84,7 @@ async function xformCartItem(context, catalogItems, products, cartItem) {
 /**
  * @param {Object} context - an object containing the per-request state
  * @param {Object[]} items Array of CartItem
- * @return {Object[]} Same array with GraphQL-only props added
+ * @returns {Object[]} Same array with GraphQL-only props added
  */
 export async function xformCartItems(context, items) {
   const { collections, getFunctionsOfType } = context;
@@ -130,11 +130,14 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
       displayName: option.method.label || option.method.name,
       group: option.method.group || null,
       name: option.method.name,
-      // For now, this is always shipping. Revisit when adding download, pickup, etc. types
-      fulfillmentTypes: ["shipping"]
+      fulfillmentTypes: option.method.fulfillmentTypes
     },
     handlingPrice: {
-      amount: option.handling || 0,
+      amount: option.handlingPrice || 0,
+      currencyCode: cart.currencyCode
+    },
+    shippingPrice: {
+      amount: option.shippingPrice || 0,
       currencyCode: cart.currencyCode
     },
     price: {
@@ -152,8 +155,7 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
         displayName: fulfillmentGroup.shipmentMethod.label || fulfillmentGroup.shipmentMethod.name,
         group: fulfillmentGroup.shipmentMethod.group || null,
         name: fulfillmentGroup.shipmentMethod.name,
-        // For now, this is always shipping. Revisit when adding download, pickup, etc. types
-        fulfillmentTypes: ["shipping"]
+        fulfillmentTypes: fulfillmentGroup.shipmentMethod.fulfillmentTypes
       },
       handlingPrice: {
         amount: fulfillmentGroup.shipmentMethod.handling || 0,
@@ -249,7 +251,7 @@ export async function xformCartCheckout(collections, cart) {
     };
     if (taxSummary) {
       const effectiveTaxRate = taxSummary.tax / taxSummary.taxableAmount;
-      effectiveTaxRateObject = xformRateToRateObject(effectiveTaxRate);
+      effectiveTaxRateObject = getRateObjectForRate(effectiveTaxRate);
     }
   }
 

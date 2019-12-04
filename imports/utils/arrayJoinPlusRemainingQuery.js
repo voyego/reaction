@@ -1,6 +1,6 @@
 import _ from "lodash";
 import ReactionError from "@reactioncommerce/reaction-error";
-import { getPaginatedResponse } from "@reactioncommerce/reaction-graphql-utils";
+import getPaginatedResponse from "./graphql/getPaginatedResponse.js";
 import arrayJoinQuery from "./arrayJoinQuery";
 
 const DEFAULT_LIMIT = 20;
@@ -33,7 +33,7 @@ const DEFAULT_LIMIT = 20;
  * @param {String} sortByForRemainingDocs The field to sort remaining (non-referenced) docs by
  * @param {String} sortOrderForRemainingDocs Must be "asc" or "desc". The direction in which to
  *   sort remaining (non-referenced) docs
- * @return {Object[]} Array of found documents in correct sort
+ * @returns {Object[]} Array of found documents in correct sort
  */
 export default async function arrayJoinPlusRemainingQuery({
   arrayFieldPath,

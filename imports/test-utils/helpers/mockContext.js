@@ -1,8 +1,13 @@
 const mockContext = {
   accountId: "FAKE_ACCOUNT_ID",
   appEvents: {
-    emit() {},
-    on() {}
+    emit() { },
+    on() { }
+  },
+  auth: {
+    accountByUserId: jest.fn().mockName("accountByUserId").mockImplementation((ctx, userId) => ctx.collections.Accounts.findOne({ userId })),
+    getHasPermissionFunctionForUser: jest.fn().mockName("getHasPermissionFunctionForUser").mockImplementation(() => () => false),
+    getShopsUserHasPermissionForFunctionForUser: jest.fn().mockName("getShopsUserHasPermissionForFunctionForUser").mockImplementation(() => () => [])
   },
   collections: {},
   getAbsoluteUrl: jest.fn().mockName("getAbsoluteUrl").mockImplementation((path) => {
@@ -32,6 +37,13 @@ export function mockCollection(collectionName) {
     update() {
       throw new Error("update mongo method is deprecated, use updateOne or updateMany");
     },
+    bulkWrite: jest.fn().mockName(`${collectionName}.bulkWrite`).mockReturnValue(Promise.resolve({
+      nMatched: 1,
+      nModified: 1,
+      result: {
+        writeErrors: []
+      }
+    })),
     deleteOne: jest.fn().mockName(`${collectionName}.deleteOne`).mockReturnValue(Promise.resolve({
       deletedCount: 1
     })),
@@ -61,6 +73,7 @@ export function mockCollection(collectionName) {
   "Cart",
   "Catalog",
   "Emails",
+  "ExampleIOUPaymentRefunds",
   "Groups",
   "MediaRecords",
   "NavigationItems",
@@ -78,7 +91,6 @@ export function mockCollection(collectionName) {
   "Tags",
   "Templates",
   "Themes",
-  "Translations",
   "users"
 ].forEach((collectionName) => {
   mockContext.collections[collectionName] = mockCollection(collectionName);

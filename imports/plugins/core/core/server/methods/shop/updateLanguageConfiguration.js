@@ -10,7 +10,7 @@ import { Shops } from "/lib/collections";
  * @summary enable / disable a language
  * @param {String} language - language name | "all" to bulk enable / disable
  * @param {Boolean} enabled - true / false
- * @return {Array} returns workflow array
+ * @returns {Array} returns workflow array
  */
 export default function updateLanguageConfiguration(language, enabled) {
   check(language, String);
@@ -22,11 +22,15 @@ export default function updateLanguageConfiguration(language, enabled) {
   }
   this.unblock();
 
-  const shop = Shops.findOne({
-    _id: Reaction.getShopId()
-  });
+  const shopId = Reaction.getShopId();
+
+  const shop = Shops.findOne({ _id: shopId });
 
   const defaultLanguage = shop.language;
+
+  if (language === defaultLanguage && !enabled) {
+    throw new ReactionError("invalid-param", "Cannot disable the shop default language");
+  }
 
   if (language === "all") {
     const updateObject = {};
@@ -40,24 +44,16 @@ export default function updateLanguageConfiguration(language, enabled) {
         }
       });
     }
+
     return Shops.update({
-      _id: Reaction.getShopId()
+      _id: shopId
     }, {
       $set: updateObject
-    });
-  } else if (language === defaultLanguage) {
-    return Shops.update({
-      "_id": Reaction.getShopId(),
-      "languages.i18n": language
-    }, {
-      $set: {
-        "languages.$.enabled": true
-      }
     });
   }
 
   return Shops.update({
-    "_id": Reaction.getShopId(),
+    "_id": shopId,
     "languages.i18n": language
   }, {
     $set: {

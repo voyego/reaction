@@ -1,7 +1,6 @@
 import { Security } from "meteor/ongoworks:security";
 import { Roles } from "meteor/alanning:roles";
 import * as Collections from "/lib/collections";
-import { Jobs } from "/imports/utils/jobs";
 import Reaction from "/imports/plugins/core/core/server/Reaction";
 
 const {
@@ -14,8 +13,7 @@ const {
   Shipping,
   Shops,
   Tags,
-  Templates,
-  Translations
+  Templates
 } = Collections;
 
 /**
@@ -33,6 +31,10 @@ const {
  * database operation is executed in a server method.
  */
 
+/**
+  * @description security definitions for collections
+  * @returns {undefined} undefined
+  */
 export default function () {
   /*
    * Define some additional rule chain methods
@@ -114,7 +116,7 @@ export default function () {
    */
 
   Security.permit(["insert", "update", "remove"])
-    .collections([Accounts, Products, Tags, Translations, Shipping, Orders, Packages, Templates, Jobs])
+    .collections([Accounts, Products, Tags, Shipping, Orders, Packages, Templates])
     .ifHasRoleForActiveShop({ role: "admin" })
     .ifShopIdMatches()
     .exceptProps(["shopId"])
@@ -126,7 +128,7 @@ export default function () {
 
   Security.permit(["insert", "update", "remove"])
     .collections([MediaRecords])
-    .ifHasRoleForActiveShop({ role: ["admin", "owner", "createProduct"] })
+    .ifHasRoleForActiveShop({ role: ["admin", "owner", "createProduct", "product/admin", "product/update"] })
     .ifFileBelongsToShop();
 
   /*
@@ -145,7 +147,7 @@ export default function () {
    */
 
   Products.permit(["insert", "update", "remove"])
-    .ifHasRoleForActiveShop({ role: ["createProduct"] })
+    .ifHasRoleForActiveShop({ role: ["createProduct", "product/admin"] })
     .ifShopIdMatches()
     .allowInClientCode();
 

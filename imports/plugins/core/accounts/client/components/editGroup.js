@@ -11,16 +11,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import { groupPermissions } from "../helpers/accountsHelper";
 
-/**
- * @summary React component to display edit group panel
- * @memberof Accounts
- * @extends {Component}
- * @property {Array} accounts
- * @property {Array} groups
- * @property {Function} onChangeGroup
- * @property {Array} packages
- * @property {Object} selectedGroup
- */
 class EditGroup extends Component {
   static propTypes = {
     accounts: PropTypes.array,
@@ -87,7 +77,7 @@ class EditGroup extends Component {
         Object.assign({}, this.state.alertOptions, { i18nKey: "admin.settings.createGroupSuccess" })
       );
 
-      this.setState({ isEditing: false });
+      return this.setState({ isEditing: false });
     });
   };
 
@@ -111,13 +101,13 @@ class EditGroup extends Component {
         Object.assign({}, this.state.alertOptions, { i18nKey: "admin.settings.updateGroupSuccess" })
       );
 
-      this.setState({ isEditing: false });
+      return this.setState({ isEditing: false });
     });
   };
 
-  showForm = ((grp) = {}) => (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  showForm = ((grp) = {}) => (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     this.setState({ isEditing: true, selectedGroup: grp });
   };
 

@@ -1,11 +1,10 @@
 import Logger from "@reactioncommerce/logger";
 import appEvents from "/imports/node-app/core/util/appEvents";
+import register from "/imports/node-app/core-services/core/index.js";
 import Reaction from "../Reaction";
-import register from "../no-meteor/register";
 import startNodeApp from "./startNodeApp";
 import "./browser-policy";
 import CollectionSecurity from "./collection-security";
-import { importAllTranslations } from "./i18n";
 import RateLimiters from "./rate-limits";
 
 const { REACTION_METEOR_APP_COMMAND_START_TIME } = process.env;
@@ -24,10 +23,6 @@ export default function startup() {
   }
 
   Reaction.whenAppInstanceReady(register);
-
-  Reaction.setAppVersion();
-
-  importAllTranslations();
 
   CollectionSecurity();
   RateLimiters();

@@ -1,7 +1,8 @@
+/* eslint-disable node/no-deprecated-api */
+/* TODO: revisit `url.parse` throughout Reaction */
 import url from "url";
 import Logger from "@reactioncommerce/logger";
 import { execute, subscribe } from "graphql";
-import { Accounts } from "meteor/accounts-base";
 import { Meteor } from "meteor/meteor";
 import { MongoInternals } from "meteor/mongo";
 import { WebApp } from "meteor/webapp";
@@ -9,9 +10,7 @@ import { formatApolloErrors } from "apollo-server-errors";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import ReactionNodeApp from "/imports/node-app/core/ReactionNodeApp";
 import { setBaseContext } from "/imports/plugins/core/graphql/server/getGraphQLContextInMeteorMethod";
-import runMeteorMethodWithContext from "../util/runMeteorMethodWithContext";
 import { setCollections } from "/imports/collections/rawCollections";
-import meteorFileCollectionStartup from "/imports/plugins/core/files/server/fileCollections";
 import packageJson from "/package.json";
 
 // For Meteor app tests
@@ -28,25 +27,11 @@ export default async function startNodeApp({ onAppInstanceCreated }) {
   const mongodb = MongoInternals.NpmModules.mongodb.module;
 
   const app = new ReactionNodeApp({
-    addCallMeteorMethod(context) {
-      context.callMeteorMethod = (name, ...args) => runMeteorMethodWithContext(context, name, args);
-    },
     // XXX Eventually these should be from individual env variables instead
     debug: Meteor.isDevelopment,
-    context: {
-      appVersion: packageJson.version,
-      async createUser(options) {
-        return Accounts.createUser(options);
-      },
-      mutations: {},
-      queries: {},
-      rootUrl: ROOT_URL
-    },
-    graphQL: {
-      graphiql: Meteor.isDevelopment
-    },
     httpServer: WebApp.httpServer,
-    mongodb
+    mongodb,
+    version: packageJson.version
   });
 
   if (onAppInstanceCreated) await onAppInstanceCreated(app);
@@ -68,8 +53,6 @@ export default async function startNodeApp({ onAppInstanceCreated }) {
   }
 
   setCollections(app.context.collections);
-
-  meteorFileCollectionStartup(app.context);
 
   // bind the specified paths to the Express server running GraphQL
   WebApp.connectHandlers.use(app.expressApp);

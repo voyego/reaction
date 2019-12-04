@@ -2,26 +2,15 @@ import { createServer } from "http";
 import { PubSub } from "apollo-server";
 import { merge } from "lodash";
 import mongodb, { MongoClient } from "mongodb";
+import collectionIndex from "@reactioncommerce/api-utils/collectionIndex.js";
 import Logger from "@reactioncommerce/logger";
 import appEvents from "./util/appEvents";
-import collectionIndex from "/imports/utils/collectionIndex";
+import getAbsoluteUrl from "./util/getAbsoluteUrl";
 import createApolloServer from "./createApolloServer";
-import getRootUrl from "/imports/plugins/core/core/server/util/getRootUrl";
-import getAbsoluteUrl from "/imports/plugins/core/core/server/util/getAbsoluteUrl";
+import initReplicaSet from "./util/initReplicaSet";
+import config from "./config.js";
 
-/**
- * @summary A default addCallMeteorMethod function. Adds `callMeteorMethod`
- *   function to the context (mutates it)
- * @param {Object} context The application context
- * @returns {undefined}
- */
-function defaultAddCallMethod(context) {
-  context.callMeteorMethod = (name) => {
-    console.warn(`The "${name}" Meteor method was called. The method has not yet been converted to a mutation that` + // eslint-disable-line no-console
-      " works outside of Meteor. If you are relying on a side effect or return value from this method, you may notice unexpected behavior.");
-    return null;
-  };
-}
+const { ROOT_URL } = config;
 
 export default class ReactionNodeApp {
   constructor(options = {}) {
@@ -29,12 +18,19 @@ export default class ReactionNodeApp {
     this.collections = {
       ...(options.additionalCollections || {})
     };
+
+    this.version = options.version || null;
+
     this.context = {
       ...(options.context || {}),
       app: this,
       appEvents,
+      appVersion: this.version,
+      auth: {},
       collections: this.collections,
       getFunctionsOfType: (type) => (this.functionsByType[type] || []).map(({ func }) => func),
+      mutations: {},
+      queries: {},
       // In a large production app, you may want to use an external pub-sub system.
       // See https://www.apollographql.com/docs/apollo-server/features/subscriptions.html#PubSub-Implementations
       // We may eventually bind this directly to Kafka.
@@ -58,10 +54,15 @@ export default class ReactionNodeApp {
       }
     }
 
-    this.context.rootUrl = getRootUrl();
+    // Passing in `rootUrl` option is mostly for tests. Recommend using ROOT_URL env variable.
+    const resolvedRootUrl = options.rootUrl || ROOT_URL;
+
+    this.rootUrl = resolvedRootUrl.endsWith("/") ? resolvedRootUrl : `${resolvedRootUrl}/`;
+    this.context.rootUrl = this.rootUrl;
     this.context.getAbsoluteUrl = (path) => getAbsoluteUrl(this.context.rootUrl, path);
 
     this.registeredPlugins = {};
+    this.expressMiddleware = [];
 
     this.mongodb = options.mongodb || mongodb;
   }
@@ -84,7 +85,7 @@ export default class ReactionNodeApp {
    *   A side effect is that `this.collections`/`this.context.collections`
    *   will have all collections available on it after this is called.
    * @param {Database} db MongoDB library database instance
-   * @return {undefined}
+   * @returns {undefined}
    */
   setMongoDatabase(db) {
     this.db = db;
@@ -134,7 +135,7 @@ export default class ReactionNodeApp {
    *   resolves the Promise.
    * @param {Object} options Options object
    * @param {String} options.mongoUrl MongoDB connection URL
-   * @return {Promise<undefined>} Nothing
+   * @returns {Promise<undefined>} Nothing
    */
   async connectToMongo({ mongoUrl } = {}) {
     const lastSlash = mongoUrl.lastIndexOf("/");
@@ -156,15 +157,17 @@ export default class ReactionNodeApp {
     });
   }
 
-  disconnectFromMongo() {
-    return this.mongoClient.close();
+  async disconnectFromMongo() {
+    if (this.mongoClient) {
+      await this.mongoClient.close();
+    }
   }
 
   /**
    * @summary Calls all `registerPluginHandler` type functions from all registered
    *   plugins, and then calls all `startup` type functions in series, in the order
    *   in which they were registered.
-   * @return {Promise<undefined>} Nothing
+   * @returns {Promise<undefined>} Nothing
    */
   async runServiceStartup() {
     // Call `functionsByType.registerPluginHandler` functions for every plugin that
@@ -182,6 +185,18 @@ export default class ReactionNodeApp {
       packageInfoArray.forEach(registerPluginHandlerFunc);
     });
 
+    const preStartupFunctionsRegisteredByPlugins = this.functionsByType.preStartup;
+    if (Array.isArray(preStartupFunctionsRegisteredByPlugins)) {
+      // We are intentionally running these in series, in the order in which they were registered
+      for (const preStartupFunctionInfo of preStartupFunctionsRegisteredByPlugins) {
+        Logger.info(`Running pre-startup function "${preStartupFunctionInfo.func.name}" for plugin "${preStartupFunctionInfo.pluginName}"...`);
+        const startTime = Date.now();
+        await preStartupFunctionInfo.func(this.context); // eslint-disable-line no-await-in-loop
+        const elapsedMs = Date.now() - startTime;
+        Logger.info(`pre-startup function "${preStartupFunctionInfo.func.name}" for plugin "${preStartupFunctionInfo.pluginName}" finished in ${elapsedMs}ms`);
+      }
+    }
+
     const startupFunctionsRegisteredByPlugins = this.functionsByType.startup;
     if (Array.isArray(startupFunctionsRegisteredByPlugins)) {
       // We are intentionally running these in series, in the order in which they were registered
@@ -197,10 +212,10 @@ export default class ReactionNodeApp {
 
   /**
    * @summary Creates the Apollo server and the Express app
-   * @return {undefined}
+   * @returns {undefined}
    */
   initServer() {
-    const { addCallMeteorMethod, debug, httpServer } = this.options;
+    const { debug, httpServer } = this.options;
     const { resolvers, schemas } = this.graphQL;
 
     const {
@@ -208,9 +223,9 @@ export default class ReactionNodeApp {
       expressApp,
       path
     } = createApolloServer({
-      addCallMeteorMethod: addCallMeteorMethod || defaultAddCallMethod,
       context: this.context,
       debug: debug || false,
+      expressMiddleware: this.expressMiddleware,
       resolvers,
       schemas
     });
@@ -229,7 +244,7 @@ export default class ReactionNodeApp {
    * @param {Object} options Options object
    * @param {Number} [options.port] Port to listen on. If not provided,
    *   the server will be created but will not listen.
-   * @return {Promise<undefined>} Nothing
+   * @returns {Promise<undefined>} Nothing
    */
   async startServer({ port } = {}) {
     if (!this.httpServer) this.initServer();
@@ -275,37 +290,64 @@ export default class ReactionNodeApp {
    * @param {String} options.mongoUrl MongoDB connection URL
    * @param {Number} [options.port] Port to listen on. If not provided,
    *   the server will be created but will not listen.
-   * @return {Promise<undefined>} Nothing
+   * @returns {Promise<undefined>} Nothing
    */
   async start({ mongoUrl, port } = {}) {
+    if (this.options.shouldInitReplicaSet) {
+      try {
+        await initReplicaSet(mongoUrl);
+      } catch (error) {
+        Logger.warn(`Failed to initialize a MongoDB replica set. This may result in errors or some things not working. Error: ${error.message}`);
+      }
+    }
+
     // (1) Connect to MongoDB database
     await this.connectToMongo({ mongoUrl });
 
-    // (2) Run service startup functions
+    // (2) Init the server here. Some startup may need `app.expressApp`
+    this.initServer();
+
+    // (3) Run service startup functions
     await this.runServiceStartup();
 
-    // (3) Start the Express GraphQL server
+    // (4) Start the Express GraphQL server
     await this.startServer({ port });
   }
 
   /**
    * @summary Stops the entire app. Closes the MongoDB connection and
    *   stops the Express server listening.
-   * @return {Promise<undefined>} Nothing
+   * @returns {Promise<undefined>} Nothing
    */
   async stop() {
-    // (1) Disconnect from MongoDB database
-    await this.disconnectFromMongo();
-
-    // (2) Stop the Express GraphQL server
+    // (1) Stop the Express GraphQL server
     await this.stopServer();
+
+    // (2) Run all "shutdown" functions registered by plugins
+    const shutdownFunctionsRegisteredByPlugins = this.functionsByType.shutdown;
+    if (Array.isArray(shutdownFunctionsRegisteredByPlugins)) {
+      // We are intentionally running these in series, in the order in which they were registered
+      for (const shutdownFunctionInfo of shutdownFunctionsRegisteredByPlugins) {
+        Logger.info(`Running shutdown function "${shutdownFunctionInfo.func.name}" for plugin "${shutdownFunctionInfo.pluginName}"...`);
+        const startTime = Date.now();
+        await shutdownFunctionInfo.func(this.context); // eslint-disable-line no-await-in-loop
+        const elapsedMs = Date.now() - startTime;
+        Logger.info(`Shutdown function "${shutdownFunctionInfo.func.name}" for plugin "${shutdownFunctionInfo.pluginName}" finished in ${elapsedMs}ms`);
+      }
+    }
+
+    // (3) Stop app events since the handlers will not have database access after this point
+    appEvents.stop();
+
+    // (4) Disconnect from MongoDB database
+    await this.disconnectFromMongo();
   }
 
   /**
    * @summary Plugins should call this to register everything they provide.
    *   This is a non-Meteor replacement for the old `Reaction.registerPackage`.
    * @param {Object} plugin Plugin configuration object
-   * @return {Promise<undefined>} Nothing
+   * @returns {Promise<undefined>} Nothing
    */
   async registerPlugin(plugin = {}) {
     if (typeof plugin.name !== "string" || plugin.name.length === 0) {
@@ -335,6 +377,28 @@ export default class ReactionNodeApp {
       merge(this.context.queries, plugin.queries);
     }
 
+    if (plugin.auth) {
+      Object.keys(plugin.auth).forEach((key) => {
+        if (this.context.auth[key]) {
+          throw new Error(`Plugin "${plugin.name} tried to register auth function "${key}" but another plugin already registered this type of function`);
+        }
+        this.context.auth[key] = plugin.auth[key];
+      });
+    }
+
     this._registerFunctionsByType(plugin.functionsByType, plugin.name);
+
+    if (Array.isArray(plugin.expressMiddleware)) {
+      this.expressMiddleware.push(...plugin.expressMiddleware.map((def) => ({ ...def, pluginName: plugin.name })));
+    }
+
+    if (plugin.contextAdditions) {
+      Object.keys(plugin.contextAdditions).forEach((key) => {
+        if ({}.hasOwnProperty.call(this.context, key)) {
+          throw new Error(`Plugin ${plugin.name} is trying to add ${key} key to context but it's already there`);
+        }
+        this.context[key] = plugin.contextAdditions[key];
+      });
+    }
   }
 }

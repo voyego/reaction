@@ -1,59 +1,11 @@
+/**
+ * This file is necessary for backwards compatibility while we refactor
+ * the API to remove Meteor. The no-meteor `register.js` file will
+ * eventually become the main entry point of the plugin, but for now
+ * our Meteor tooling loads this file, so we include this here as a
+ * temporary bridge.
+ */
 import Reaction from "/imports/plugins/core/core/server/Reaction";
+import register from "/imports/node-app/plugins/product-variant/index.js";
 
-Reaction.registerPackage({
-  label: "Products",
-  name: "reaction-product-variant",
-  icon: "fa fa-cubes",
-  registry: [{
-    route: "/tag/:slug?",
-    name: "tag",
-    template: "Products",
-    workflow: "coreProductGridWorkflow"
-  }, {
-    route: "/products/createProduct",
-    name: "createProduct",
-    label: "Add Product",
-    icon: "fa fa-plus",
-    template: "productDetail",
-    provides: ["shortcut"],
-    container: "addItem",
-    priority: 1,
-    permissions: [{
-      label: "Create Product",
-      permission: "createProduct"
-    }]
-  }],
-  layout: [{
-    layout: "coreLayout",
-    workflow: "coreProductWorkflow",
-    collection: "Products",
-    theme: "default",
-    enabled: true,
-    structure: {
-      template: "productDetail",
-      layoutHeader: "NavBar",
-      layoutFooter: "",
-      notFound: "productNotFound",
-      dashboardHeader: "productDetailSimpleToolbar",
-      dashboardControls: "productDetailDashboardControls",
-      dashboardHeaderControls: "",
-      adminControlsFooter: "adminControlsFooter"
-    }
-  }, {
-    layout: "coreLayout",
-    workflow: "coreProductGridWorkflow",
-    collection: "Products",
-    theme: "default",
-    enabled: true,
-    structure: {
-      template: "Products",
-      layoutHeader: "NavBar",
-      layoutFooter: "",
-      notFound: "productNotFound",
-      dashboardHeader: "gridPublishControls",
-      dashboardControls: "productDetailDashboardControls",
-      dashboardHeaderControls: "",
-      adminControlsFooter: "adminControlsFooter"
-    }
-  }]
-});
+Reaction.whenAppInstanceReady(register);

@@ -116,6 +116,10 @@ const CommonOrderTotals = new SimpleSchema({
  *   caring whether it is for a Cart or an Order.
  */
 export const CommonOrder = new SimpleSchema({
+  accountId: {
+    type: String,
+    optional: true
+  },
   billingAddress: {
     type: Address,
     optional: true
@@ -227,7 +231,8 @@ export const orderInputSchema = new SimpleSchema({
     minCount: 1
   },
   "fulfillmentGroups.$": orderFulfillmentGroupInputSchema,
-  "language": {
+  // TODO voyego: order language should be changed from language to ordererPref...
+  "ordererPreferredLanguage": {
     type: String,
     optional: true
   },
