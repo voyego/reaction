@@ -73,14 +73,6 @@ export default async function createCart(context, input) {
     }
   };
 
-  if (discountId) {
-    try {
-      await context.mutations.setDiscountCodeOnCart(context, { discountId, cartId: newCart._id });
-    } catch (err) {
-      Logger.error(err);
-    }
-  }
-
   let referenceId;
   const createReferenceIdFunctions = getFunctionsOfType("createCartReferenceId");
   if (!createReferenceIdFunctions || createReferenceIdFunctions.length === 0) {
@@ -98,6 +90,14 @@ export default async function createCart(context, input) {
   newCart.referenceId = referenceId;
 
   const savedCart = await context.mutations.saveCart(context, newCart);
+
+  if (discountId) {
+    try {
+      await context.mutations.setDiscountCodeOnCart(context, { discountId, cartId: savedCart._id });
+    } catch (err) {
+      Logger.error(err);
+    }
+  }
 
   return { cart: savedCart, incorrectPriceFailures, minOrderQuantityFailures, token: anonymousAccessToken };
 }
