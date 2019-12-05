@@ -7,6 +7,7 @@ import findVariantInCatalogProduct from "./findVariantInCatalogProduct.js";
 import tag from "./tag.js";
 import tags from "./tags.js";
 import tagsByIds from "./tagsByIds.js";
+import findProductMedia from "./findProductMedia";
 
 export default {
   catalogItems,
@@ -17,5 +18,6 @@ export default {
   findVariantInCatalogProduct,
   tag,
   tags,
-  tagsByIds
+  tagsByIds,
+  findProductMedia
 };
