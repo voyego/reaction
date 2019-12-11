@@ -117,11 +117,6 @@ async function xformOrderItem(context, item) {
     [media] = variant.media;
   }
 
-  // Allow plugins to transform the media object
-  if (media) {
-    media = await xformCatalogProductMedia(media, context);
-  }
-
   return {
     ...item,
     imageURLs: media && media.URLs,

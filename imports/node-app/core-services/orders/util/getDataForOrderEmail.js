@@ -170,6 +170,13 @@ export default async function getDataForOrderEmail(context, { order }) {
     }
   }
 
+  const itemsWithAttributes = await Promise.all(combinedItems.map(async item => {
+    const result = await getAttributes(context, item, order.ordererPreferredLanguage)
+    const attributes = R.pick(['productAttributes', 'variantAttributes'], R.pathOr({}, ['0'], result))
+
+    return { ...item, ...attributes, shouldDisplayMileage: shouldDisplayMileage(attributes) }
+  }))
+
   // Merge data into single object to pass to email template
   return {
     // Shop Data
@@ -234,7 +241,7 @@ export default async function getDataForOrderEmail(context, { order }) {
         userCurrency
       )
     },
-    combinedItems,
+    combinedItems: itemsWithAttributes,
     orderDate: formatDateForEmail(order.createdAt),
     orderUrl,
     shipping: {
@@ -243,6 +250,53 @@ export default async function getDataForOrderEmail(context, { order }) {
       tracking
     }
   };
+}
+
+async function shouldDisplayMileage(attributes) {
+  return R.path(['variantAttributes', 'options', 'new'], attributes) === 'false'
+}
+
+async function getAttributes(context, item, lng) {
+  const { collections: { Catalog } } = context;
+  const result = await Catalog.aggregate([
+    { $match: { "product.productId": item.productId } },
+    { $unwind: "$product.variants" },
+    { $match: { "product.variants.variantId": item.variantId } },
+    {
+      $project: {
+        productAttributes: "$product.attributes",
+        variantAttributes: "$product.variants.attributes"
+      }
+    },
+    {
+      $lookup: {
+        from: '_integrations_dictionaries',
+        let: { colorId: '$variantAttributes.dictionary.color' }, 
+        pipeline: [
+          { 
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: [ '$$colorId', '$originId' ]
+                  },
+                  {
+                    $eq: [ 'color', '$key' ]
+                  },
+                  {
+                    $eq: [ lng, '$language' ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        as: 'variantAttributes.dictionary.translatedColor'
+      }
+    }
+  ]).toArray();
+
+  return result;
 }
 
 async function getBankDetails(context, shopId) {
