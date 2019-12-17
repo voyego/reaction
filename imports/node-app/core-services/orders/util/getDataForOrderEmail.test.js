@@ -14,10 +14,6 @@ mockContext.queries.getPaymentMethodConfigByName = jest.fn().mockName("getPaymen
   }
 }));
 
-//mockContext.queries.findProductMedia.mockReturnValueOnce({ variant: { media: [] } });
-
-
-
 beforeEach(() => {
   jest.clearAllMocks();
 });
