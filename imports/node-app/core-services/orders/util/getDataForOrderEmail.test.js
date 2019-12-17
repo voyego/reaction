@@ -14,6 +14,10 @@ mockContext.queries.getPaymentMethodConfigByName = jest.fn().mockName("getPaymen
   }
 }));
 
+//mockContext.queries.findProductMedia.mockReturnValueOnce({ variant: { media: [] } });
+
+
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -27,6 +31,20 @@ function setupMocks(mockShop, mockCatalogItem) {
     catalogProduct: mockCatalogItem.product,
     variant: mockCatalogItem.product.variants[0]
   });
+  
+  mockContext.queries.findProductMedia = jest.fn().mockName("queries.findProductMedia").mockReturnValueOnce({ variant: { media: [{
+    URLs: {
+      "large": "large.jpg",
+      "medium": "medium.jpg",
+      "original": "original.jpg",
+      "small": "small.jpg",
+      "thumbnail": "thumbnail.jpg"
+    },
+    productId: mockCatalogItem.product._id,
+    variantId: mockCatalogItem.product.variants[0]._id,
+    toGrid: 0,
+    priority: 1
+  }] } });
 }
 
 test("returns expected data structure (base case)", async () => {
@@ -86,14 +104,19 @@ test("returns expected data structure (base case)", async () => {
       payments: [
         {
           displayAmount: jasmine.any(String),
-          displayName: "mockDisplayName"
+          displayName: "mockDisplayName",
+          bankDetails:  null,
+          isCashpresso: jasmine.any(Boolean),
+          isInAdvance: jasmine.any(Boolean),
+          isInSantanderManual: jasmine.any(Boolean)
         }
       ],
       refunds: jasmine.any(String),
       shipping: jasmine.any(String),
       subtotal: jasmine.any(String),
       taxes: jasmine.any(String),
-      total: jasmine.any(String)
+      total: jasmine.any(String),
+      santanderMin: jasmine.any(String)
     },
     combinedItems: [
       {
@@ -168,10 +191,9 @@ test("returns expected data structure (base case)", async () => {
     orderDate: jasmine.any(String),
     orderUrl: "http://example.com/storefrontOrderUrl/mockReferenceId?token=",
     physicalAddress: {
-      address: "mockAddress1 mockAddress2",
+      address: "mockAddress1",
       city: "mockCity",
-      postal: "mockPostal",
-      region: "mockRegion"
+      postal: "mockPostal"
     },
     shipping: {
       address: {
