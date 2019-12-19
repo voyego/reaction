@@ -56,6 +56,11 @@ class Login extends Component {
     });
   }
 
+
+  isOauthFlow(fullPath) {
+    return /\/account\/login\?action/.test(fullPath)
+  }
+
   render() {
     const currentRoute = Router.current().route;
     const isOauthFlow = currentRoute.options && currentRoute.options.meta && currentRoute.options.meta.oauthLoginFlow;
@@ -63,7 +68,7 @@ class Login extends Component {
     const { currentView } = this.state;
 
     if (currentView === "loginFormSignInView" || currentView === "loginFormSignUpView" || currentView === "loginFormUpdatePasswordView") {
-      if (isOauthFlow) {
+      if (this.isOauthFlow(currentRoute.fullPath)) {
         return (
           <Components.OAuthFormContainer
             credentials={this.props.credentials}
