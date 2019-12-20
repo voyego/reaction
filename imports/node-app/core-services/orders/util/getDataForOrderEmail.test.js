@@ -21,12 +21,16 @@ beforeEach(() => {
 function setupMocks(mockShop, mockCatalogItem) {
   mockContext.collections.Shops.findOne.mockReturnValueOnce(mockShop);
   mockContext.collections.Catalog.toArray.mockReturnValueOnce([mockCatalogItem]);
-
+  
   mockContext.queries.findVariantInCatalogProduct = jest.fn().mockName("findVariantInCatalogProduct");
   mockContext.queries.findVariantInCatalogProduct.mockReturnValueOnce({
     catalogProduct: mockCatalogItem.product,
     variant: mockCatalogItem.product.variants[0]
   });
+
+  mockContext.collections.Catalog.aggregate = jest.fn().mockName("collections.Catalog.aggregate").mockImplementation(() => ({
+      toArray: async () => []
+  }));
   
   mockContext.queries.findProductMedia = jest.fn().mockName("queries.findProductMedia").mockReturnValueOnce({ variant: { media: [{
     URLs: {
@@ -117,6 +121,7 @@ test("returns expected data structure (base case)", async () => {
     combinedItems: [
       {
         ...mockOrder.shipping[0].items[0],
+        shouldDisplayMileage: jasmine.any(Promise),
         imageURLs: {
           large: "large.jpg",
           medium: "medium.jpg",
