@@ -196,7 +196,7 @@ export default async function getDataForOrderEmail(context, { order }) {
       facebook: {
         display: true,
         icon: getAbsoluteUrl("/resources/email-templates/facebook-icon.png"),
-        link: "https://www.facebook.com"
+        link: "https://www.facebook.com/GreenstormMarketplaceDE/"
       },
       googlePlus: {
         display: true,
@@ -206,7 +206,7 @@ export default async function getDataForOrderEmail(context, { order }) {
       twitter: {
         display: true,
         icon: getAbsoluteUrl("/resources/email-templates/twitter-icon.png"),
-        link: "https://www.twitter.com"
+        link: "https://twitter.com/GreenstormEbike"
       }
     },
     order: {
