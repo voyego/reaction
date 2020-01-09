@@ -79,7 +79,7 @@ async function sendResetEmail(userId, optionalEmail, language) {
       facebook: {
         display: true,
         icon: `${Reaction.absoluteUrl()}resources/email-templates/facebook-icon.png`,
-        link: "https://www.facebook.com"
+        link: "https://www.facebook.com/GreenstormMarketplaceDE/"
       },
       googlePlus: {
         display: true,
@@ -89,7 +89,7 @@ async function sendResetEmail(userId, optionalEmail, language) {
       twitter: {
         display: true,
         icon: `${Reaction.absoluteUrl()}resources/email-templates/twitter-icon.png`,
-        link: "https://www.twitter.com"
+        link: "https://twitter.com/GreenstormEbike"
       }
     },
     // Account Data

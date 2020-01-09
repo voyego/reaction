@@ -73,7 +73,7 @@ async function sendResetEmail(context, account, email) {
       facebook: {
         display: true,
         icon: `${context.getAbsoluteUrl()}resources/email-templates/facebook-icon.png`,
-        link: "https://www.facebook.com"
+        link: "https://www.facebook.com/GreenstormMarketplaceDE/"
       },
       googlePlus: {
         display: true,
@@ -83,7 +83,7 @@ async function sendResetEmail(context, account, email) {
       twitter: {
         display: true,
         icon: `${context.getAbsoluteUrl()}resources/email-templates/twitter-icon.png`,
-        link: "https://www.twitter.com"
+        link: "https://twitter.com/GreenstormEbike"
       }
     },
     // Account Data

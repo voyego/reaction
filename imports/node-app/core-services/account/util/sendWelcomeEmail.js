@@ -50,7 +50,7 @@ export default async function sendWelcomeEmail(context, input) {
       facebook: {
         display: true,
         icon: context.getAbsoluteUrl("resources/email-templates/facebook-icon.png"),
-        link: "https://www.facebook.com"
+        link: "https://www.facebook.com/GreenstormMarketplaceDE/"
       },
       googlePlus: {
         display: true,
@@ -60,7 +60,7 @@ export default async function sendWelcomeEmail(context, input) {
       twitter: {
         display: true,
         icon: context.getAbsoluteUrl("resources/email-templates/twitter-icon.png"),
-        link: "https://www.twitter.com"
+        link: "https://twitter.com/GreenstormEbike"
       }
     },
     verificationUrl: context.getAbsoluteUrl(`#/verify-email/${token}`)
