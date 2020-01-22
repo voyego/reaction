@@ -213,7 +213,7 @@ test("returns expected data structure (base case)", async () => {
       facebook: {
         display: true,
         icon: "https://app.mock/resources/email-templates/facebook-icon.png",
-        link: "https://www.facebook.com"
+        link: "https://www.facebook.com/GreenstormMarketplaceDE/"
       },
       googlePlus: {
         display: true,
@@ -223,7 +223,7 @@ test("returns expected data structure (base case)", async () => {
       twitter: {
         display: true,
         icon: "https://app.mock/resources/email-templates/twitter-icon.png",
-        link: "https://www.twitter.com"
+        link: "https://twitter.com/GreenstormEbike"
       }
     }
   });
