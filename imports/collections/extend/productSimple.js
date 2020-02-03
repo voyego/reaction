@@ -6,6 +6,10 @@ const SystemSchema = new SimpleSchema({
   },
   weight: {
     type: String
+  },
+  priority: {
+    type: Number,
+    optional: true
   }
 });
 
