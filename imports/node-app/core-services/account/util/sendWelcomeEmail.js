@@ -35,6 +35,7 @@ export default async function sendWelcomeEmail(context, input) {
   const dataForEmail = {
     // Shop Data
     contactEmail: _.get(shop, "emails[0].address"),
+    storefrontUrl: _.get(shop, "storefrontUrls.storefrontHomeUrl"),
     copyrightDate,
     legalName: _.get(shop, "addressBook[0].company"),
     physicalAddress: {
