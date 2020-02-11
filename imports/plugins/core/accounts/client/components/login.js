@@ -89,14 +89,12 @@ class Login extends Component {
       );
     } else if (currentView === "loginFormResetPasswordView") {
       return (
-        <div className={idpFormClass}>
-          <Components.ForgotPassword
-            credentials={this.props.credentials}
-            uniqueId={this.props.uniqueId}
-            currentView={currentView}
-            onSignInClick={this.showSignInView}
-          />
-        </div>
+        <Components.ForgotPassword
+          credentials={this.props.credentials}
+          uniqueId={this.props.uniqueId}
+          currentView={currentView}
+          onSignInClick={this.showSignInView}
+        />
       );
     }
 
