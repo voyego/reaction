@@ -23,8 +23,14 @@ import reconcileCartsMerge from "./reconcileCartsMerge.js";
 export default async function reconcileCarts(context, input) {
   const { accountId, collections, user } = context;
   const { Cart } = collections;
-  const { anonymousCartId, anonymousCartToken, mode = "merge" } = input;
-
+  const { anonymousCartId, anonymousCartToken } = input;
+  
+  // quick solution
+  // mode is available in input, but we do not support reconciliation
+  // due to not allowing items from different shops
+  // and a lot of bikes have quantity 1, which is also not handled by default
+  const mode = "keepAnonymousCart";
+  
   if (!accountId) throw new ReactionError("access-denied", "Access Denied");
   if (!anonymousCartId) throw new ReactionError("invalid-param", "anonymousCartId is required");
   if (!anonymousCartToken) throw new ReactionError("invalid-param", "anonymousCartToken is required");
@@ -62,7 +68,7 @@ export default async function reconcileCarts(context, input) {
 
       case "keepAnonymousCart":
         return {
-          cart: await reconcileCartsKeepAnonymousCart({ accountCart, anonymousCart, anonymousCartSelector, context })
+          cart: await reconcileCartsKeepAnonymousCart({ accountCart, anonymousCart, accountCartSelector, context })
         };
 
       case "merge":
