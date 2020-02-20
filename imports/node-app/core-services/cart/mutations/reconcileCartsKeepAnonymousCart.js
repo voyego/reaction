@@ -29,7 +29,7 @@ export default async function reconcileCartsKeepAnonymousCart({
   const savedCart = await context.mutations.saveCart(context, updatedCart);
 
   const { deletedCount } = await Cart.deleteOne(accountCartSelector);
-  if (deletedCount === 0) throw new ReactionError("server-error", "Unable to delete anonymous cart");
+  if (deletedCount === 0) throw new ReactionError("server-error", "Unable to delete account cart");
 
   return savedCart;
 }
