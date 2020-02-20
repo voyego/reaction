@@ -162,6 +162,14 @@ export const OrderAddress = new SimpleSchema({
   },
   "metafields.$": {
     type: Metafield
+  },
+  title: {
+    type: String,
+    optional: true
+  },
+  honorifics: {
+    type: String,
+    optional: true
   }
 });
 
