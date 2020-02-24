@@ -12,7 +12,7 @@ export default async function startup(context) {
   const { app } = context;
 
   // Setup sitemap generation recurring job
-  await generateSitemapsJob(context);
+  // await generateSitemapsJob(context);
 
   // Wire up a file download route
   if (app.expressApp) {
