@@ -534,7 +534,7 @@ type ReconcileCartsPayload {
 "The payload returned from the `setEmailOnAnonymousCart` mutation call"
 type SetEmailOnAnonymousCartPayload {
   "The modified cart"
-  cart: Cart!
+  cart: Cart
 
   "The same string you sent with the mutation params, for matching mutation calls with their responses"
   clientMutationId: String

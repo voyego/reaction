@@ -78,7 +78,7 @@ input SetShippingAddressOnCartInput {
 "The response from the `setShippingAddressOnCart` mutation"
 type SetShippingAddressOnCartPayload {
   "The updated Cart"
-  cart: Cart!
+  cart: Cart
 
   "The same string you sent with the mutation params, for matching mutation calls with their responses"
   clientMutationId: String
@@ -129,7 +129,7 @@ input SelectFulfillmentOptionForGroupInput {
 "The response from the `selectFulfillmentOptionForGroup` mutation"
 type SelectFulfillmentOptionForGroupPayload {
   "The updated Cart"
-  cart: Cart!
+  cart: Cart
 
   "The same string you sent with the mutation params, for matching mutation calls with their responses"
   clientMutationId: String
