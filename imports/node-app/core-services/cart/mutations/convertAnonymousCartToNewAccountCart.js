@@ -1,5 +1,6 @@
 import Random from "@reactioncommerce/random";
 import ReactionError from "@reactioncommerce/reaction-error";
+
 /**
  * @summary Copy items from an anonymous cart into a new account cart, and then delete the
  *   anonymous cart.
@@ -12,7 +13,6 @@ export default async function convertAnonymousCartToNewAccountCart(context, {
   anonymousCart,
   anonymousCartSelector
 }) {
-
   const { accountId, collections: { Cart } } = context;
 
   const createdAt = new Date();
@@ -26,8 +26,6 @@ export default async function convertAnonymousCartToNewAccountCart(context, {
     currencyCode,
     createdAt,
     items: anonymousCart.items,
-    //discount: anonymousCart.discount,
-    //billing: anonymousCart.billing,
     shopId,
     updatedAt: createdAt,
     workflow: {

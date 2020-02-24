@@ -42,9 +42,11 @@ export default async function reconcileCarts(context, input) {
     $or: [accountCartSelector, anonymousCartSelector]
   }).toArray();
 
+  Logger.info('carts', carts);
+
   const anonymousCart = carts.find((cart) => cart._id === anonymousCartId);
   if (!anonymousCart) throw new ReactionError("not-found", "Anonymous cart not found");
-
+  
   const { shopId } = anonymousCart;
 
   // In the Meteor app, there are accounts for anonymous users. This check can be removed someday.
@@ -56,6 +58,12 @@ export default async function reconcileCarts(context, input) {
     throw new ReactionError("access-denied", "Access Denied");
   }
 
+  // Anyonymous cart has highest priority
+  return {
+    cart: await reconcileCartsKeepAnonymousCart({ anonymousCart, accountCartSelector, context })
+  };
+
+  /*
   const accountCart = carts.find((cart) => cart.accountId === accountId && cart.shopId === shopId);
 
   if (accountCart) {
@@ -68,7 +76,7 @@ export default async function reconcileCarts(context, input) {
 
       case "keepAnonymousCart":
         return {
-          cart: await reconcileCartsKeepAnonymousCart({ accountCart, anonymousCart, accountCartSelector, context })
+          cart: await reconcileCartsKeepAnonymousCart({ anonymousCart, accountCartSelector, context })
         };
 
       case "merge":
@@ -80,7 +88,6 @@ export default async function reconcileCarts(context, input) {
         throw new ReactionError("invalid-param", "mode must be keepAccountCart, keepAnonymousCart, or merge");
     }
   }
-
   // We have only an anonymous cart, so convert it to an account cart
   return {
     cart: await convertAnonymousCartToNewAccountCart(context, {
@@ -88,4 +95,5 @@ export default async function reconcileCarts(context, input) {
       anonymousCartSelector
     })
   };
+  */
 }
