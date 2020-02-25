@@ -1,4 +1,3 @@
-import ReactionError from "@reactioncommerce/reaction-error";
 /**
  * @summary Update account cart to have only the anonymous cart items, delete anonymous
  *   cart, and return updated accountCart.
@@ -11,25 +10,22 @@ import ReactionError from "@reactioncommerce/reaction-error";
  * @returns {Object} The updated account cart
  */
 export default async function reconcileCartsKeepAnonymousCart({
-  accountCart,
   anonymousCart,
   accountCartSelector,
   context
 }) {
-  const { collections } = context;
+  const { collections, accountId } = context;
   const { Cart } = collections;
+  await Cart.deleteOne(accountCartSelector);
 
   const updatedCart = {
     ...anonymousCart,
     anonymousAccessToken: null,
-    accountId: accountCart.accountId,
+    accountId,
     updatedAt: new Date()
   };
 
   const savedCart = await context.mutations.saveCart(context, updatedCart);
-
-  const { deletedCount } = await Cart.deleteOne(accountCartSelector);
-  if (deletedCount === 0) throw new ReactionError("server-error", "Unable to delete account cart");
 
   return savedCart;
 }

@@ -1,10 +1,10 @@
 import hashToken from "@reactioncommerce/api-utils/hashToken.js";
 import Logger from "@reactioncommerce/logger";
 import ReactionError from "@reactioncommerce/reaction-error";
-import convertAnonymousCartToNewAccountCart from "./convertAnonymousCartToNewAccountCart.js";
-import reconcileCartsKeepAccountCart from "./reconcileCartsKeepAccountCart.js";
+// import convertAnonymousCartToNewAccountCart from "./convertAnonymousCartToNewAccountCart.js";
+// import reconcileCartsKeepAccountCart from "./reconcileCartsKeepAccountCart.js";
 import reconcileCartsKeepAnonymousCart from "./reconcileCartsKeepAnonymousCart.js";
-import reconcileCartsMerge from "./reconcileCartsMerge.js";
+// import reconcileCartsMerge from "./reconcileCartsMerge.js";
 
 /**
  * @method reconcileCarts
@@ -29,7 +29,7 @@ export default async function reconcileCarts(context, input) {
   // mode is available in input, but we do not support reconciliation
   // due to not allowing items from different shops
   // and a lot of bikes have quantity 1, which is also not handled by default
-  const mode = "keepAnonymousCart";
+  // const mode = "keepAnonymousCart";
   
   if (!accountId) throw new ReactionError("access-denied", "Access Denied");
   if (!anonymousCartId) throw new ReactionError("invalid-param", "anonymousCartId is required");
@@ -56,6 +56,12 @@ export default async function reconcileCarts(context, input) {
     throw new ReactionError("access-denied", "Access Denied");
   }
 
+  // Anyonymous cart has highest priority
+  return {
+    cart: await reconcileCartsKeepAnonymousCart({ anonymousCart, accountCartSelector, context })
+  };
+
+  /*
   const accountCart = carts.find((cart) => cart.accountId === accountId && cart.shopId === shopId);
 
   if (accountCart) {
@@ -68,7 +74,7 @@ export default async function reconcileCarts(context, input) {
 
       case "keepAnonymousCart":
         return {
-          cart: await reconcileCartsKeepAnonymousCart({ accountCart, anonymousCart, accountCartSelector, context })
+          cart: await reconcileCartsKeepAnonymousCart({ anonymousCart, accountCartSelector, context })
         };
 
       case "merge":
@@ -80,7 +86,7 @@ export default async function reconcileCarts(context, input) {
         throw new ReactionError("invalid-param", "mode must be keepAccountCart, keepAnonymousCart, or merge");
     }
   }
-
+  
   // We have only an anonymous cart, so convert it to an account cart
   return {
     cart: await convertAnonymousCartToNewAccountCart(context, {
@@ -88,4 +94,5 @@ export default async function reconcileCarts(context, input) {
       anonymousCartSelector
     })
   };
+  */
 }
