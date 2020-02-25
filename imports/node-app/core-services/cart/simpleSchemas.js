@@ -677,6 +677,80 @@ const AppliedSurcharge = new SimpleSchema({
   }
 });
 
+const DictionarySchemaVariant = new SimpleSchema({
+  condition: {
+    type: String,
+    optional: true
+  },
+  color: {
+    type: String,
+    optional: true
+  }
+});
+
+/*
+const SystemSchemaVariant = new SimpleSchema({
+  originId: {
+    type: String,
+    optional: true
+  },
+  priceDiscountPercentage: {
+    type: String,
+    optional: true
+  },
+  priceDiscountAbsolute: {
+    type: String,
+    optional: true
+  },
+  priceDiscountMileage: {
+    type: String,
+    optional: true
+  },
+  isTaxable: {
+    type: String,
+    optional: true
+  },
+  taxCode: {
+    type: String,
+    optional: true
+  }
+});
+const OptionsSchemaVariant = new SimpleSchema({
+  new: {
+    type: String,
+    optional: true
+  },
+  code: {
+    type: String,
+    optional: true
+  },
+  frameHeight: {
+    type: String,
+    optional: true
+  },
+  frameNumber: {
+    type: String,
+    optional: true
+  },
+  wheelDiameter: {
+    type: String,
+    optional: true
+  },
+  mileage: {
+    type: Number,
+    optional: true
+  },
+  image: {
+    type: String,
+    optional: true
+  }
+});*/
+
+const GsVariantAttributes = new SimpleSchema({
+  dictionary: DictionarySchemaVariant
+});
+
+
 /**
  * @name CartItemAttribute
  * @memberof Schemas
@@ -729,6 +803,7 @@ export const CartItem = new SimpleSchema({
     type: Money,
     optional: true
   },
+  "GsVariantAttributes": GsVariantAttributes,
   "createdAt": Date,
   "metafields": {
     type: Array,

@@ -93,24 +93,20 @@ export default async function addCartItems(context, currentItems, inputItems, op
     // not ordered unless back-ordering is enabled.
 
     // Until we do a more complete attributes revamp, we'll do our best to fudge attributes here.
-    const attributes = [];
     if (parentVariant) {
-      attributes.push({
-        label: parentVariant.attributeLabel,
-        value: parentVariant.optionTitle
-      });
+      GsVariantAttributes = {
+        dictionary: parentVariant.attributes.dictionary
+      }
     }
-    attributes.push({
-      label: chosenVariant.attributeLabel,
-      value: chosenVariant.optionTitle
-    });
-
+    GsVariantAttributes = {
+      dictionary: chosenVariant.attributes.dictionary
+    }
     const cartItem = {
       _id: Random.id(),
-      attributes,
       compareAtPrice: null,
       isTaxable: chosenVariant.isTaxable || false,
       metafields,
+      GsVariantAttributes,
       optionTitle: chosenVariant.optionTitle,
       parcel: chosenVariant.parcel,
       // This one will be kept updated by event handler watching for
