@@ -134,6 +134,10 @@ export const Address = new SimpleSchema({
   honorifics: {
     type: String,
     optional: true
+  },
+  houseNumber: {
+    type: String,
+    optional: true
   }
 });
 
