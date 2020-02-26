@@ -19,6 +19,7 @@
     "url": "https://github.com/reactioncommerce/reaction/issues"
   },
   "dependencies": {
+    "md5": "^2.2.1",
     "@apollo/react-testing": "^3.0.0",
     "@babel/runtime": "7.4.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.14",

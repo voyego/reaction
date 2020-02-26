@@ -7,7 +7,11 @@ import config from "./config";
 import buildContext from "./util/buildContext";
 import getErrorFormatter from "./util/getErrorFormatter";
 import createDataLoaders from "./util/createDataLoaders";
+import { CacheContents } from '../../plugins/custom/reaction-plugin-integrations/lib/collections'
+import md5 from 'md5'
 
+
+const operationWhitelist = ["tagsQuery", "catalogItemsQuery", "getGridFiltersQuery", "tagQuery"]
 const DEFAULT_GRAPHQL_PATH = "/graphql-beta";
 
 const resolverValidationOptions = {
@@ -43,6 +47,30 @@ export default function createApolloServer(options = {}) {
   }
 
   const apolloServer = new ApolloServer({
+    plugins: [
+      {
+        requestDidStart() {
+          return {
+            willSendResponse(requestContext) {
+              const operationName = requestContext.request.operationName
+              if (operationWhitelist.includes(operationName)) {
+                const key = md5(JSON.stringify({ 
+                  operationName: requestContext.request.operationName,
+                  query: requestContext.request.query,
+                  variables: requestContext.request.variables
+                 }))
+                if (!CacheContents.findOne({ key })) {
+                  const response = requestContext.response
+                  CacheContents.rawCollection().insertOne({ key, response })
+                }
+              }
+              
+            }
+          }
+        },
+
+      }
+    ],
     async context({ connection, req }) {
       const context = { ...contextFromOptions };
 
@@ -92,6 +120,30 @@ export default function createApolloServer(options = {}) {
     // Redirect to path once graphql-alpha is received
     res.redirect(path);
   });
+
+  app.all("/graphql-beta", async (req, res, next) => {
+    try {
+      const operationName = req.body.operationName
+      if (operationWhitelist.includes(operationName)) {
+        const key = md5(JSON.stringify({ 
+          operationName: req.body.operationName,  
+          query: req.body.query,
+          variables: req.body.variables
+         }))
+        const cachedResponse = await CacheContents.rawCollection().findOne({ key })
+        
+        if (cachedResponse) {
+          return res.status(200).send(cachedResponse.response)
+        }
+      }
+      
+      next()
+    } catch (err) {
+      console.error(err)
+      // try next maybe it will work
+      next()
+    }
+  })
 
   apolloServer.applyMiddleware({ app, cors: true, path });
 
