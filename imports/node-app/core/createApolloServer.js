@@ -10,9 +10,9 @@ import createDataLoaders from "./util/createDataLoaders";
 import { CacheContents } from '../../plugins/custom/reaction-plugin-integrations/lib/collections'
 import md5 from 'md5'
 
-
 const operationWhitelist = ["tagsQuery", "catalogItemsQuery", "getGridFiltersQuery", "tagQuery"]
 const DEFAULT_GRAPHQL_PATH = "/graphql-beta";
+const ENABLE_RESPONSE_CACHE = process.env.ENABLE_RESPONSE_CACHE
 
 const resolverValidationOptions = {
   // After we fix all errors that this prints, we should probably go
@@ -52,19 +52,25 @@ export default function createApolloServer(options = {}) {
         requestDidStart() {
           return {
             willSendResponse(requestContext) {
-              const operationName = requestContext.request.operationName
-              if (operationWhitelist.includes(operationName)) {
-                const key = md5(JSON.stringify({ 
-                  operationName: requestContext.request.operationName,
-                  query: requestContext.request.query,
-                  variables: requestContext.request.variables
-                 }))
-                if (!CacheContents.findOne({ key })) {
-                  const response = requestContext.response
-                  CacheContents.rawCollection().insertOne({ key, response })
+              if (ENABLE_RESPONSE_CACHE) {
+                try {
+                  const operationName = requestContext.request.operationName
+                  if (operationWhitelist.includes(operationName)) {
+                    const key = md5(JSON.stringify({ 
+                      operationName: requestContext.request.operationName,
+                      query: requestContext.request.query,
+                      variables: requestContext.request.variables
+                     }))
+                    if (!CacheContents.findOne({ key })) {
+                      const response = requestContext.response
+                      CacheContents.rawCollection().insertOne({ key, response, createdAt: new Date() })
+                    }
+                  }
+                } catch(err) {
+                  // Handle error so continue with response if error occured
+                  console.log('err', err)
                 }
               }
-              
             }
           }
         },
@@ -121,29 +127,32 @@ export default function createApolloServer(options = {}) {
     res.redirect(path);
   });
 
-  app.all("/graphql-beta", async (req, res, next) => {
-    try {
-      const operationName = req.body.operationName
-      if (operationWhitelist.includes(operationName)) {
-        const key = md5(JSON.stringify({ 
-          operationName: req.body.operationName,  
-          query: req.body.query,
-          variables: req.body.variables
-         }))
-        const cachedResponse = await CacheContents.rawCollection().findOne({ key })
-        
-        if (cachedResponse) {
-          return res.status(200).send(cachedResponse.response)
+  if (ENABLE_RESPONSE_CACHE) {
+    app.all("/graphql-beta", async (req, res, next) => {
+      try {
+        const operationName = req.body.operationName
+        if (operationWhitelist.includes(operationName)) {
+          const key = md5(JSON.stringify({ 
+            operationName: req.body.operationName,  
+            query: req.body.query,
+            variables: req.body.variables
+           }))
+          const cachedResponse = await CacheContents.rawCollection().findOne({ key })
+          
+          if (cachedResponse) {
+            return res.status(200).send(cachedResponse.response)
+          }
         }
+        
+        next()
+      } catch (err) {
+        // if error occured it occured due to cache query search
+        // if error occurs go back to apollo default handling
+        console.error(err)
+        next()
       }
-      
-      next()
-    } catch (err) {
-      console.error(err)
-      // try next maybe it will work
-      next()
-    }
-  })
+    })
+  }
 
   apolloServer.applyMiddleware({ app, cors: true, path });
 
