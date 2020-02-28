@@ -10,7 +10,16 @@ import createDataLoaders from "./util/createDataLoaders";
 import { CacheContents } from '../../plugins/custom/reaction-plugin-integrations/lib/collections'
 import md5 from 'md5'
 
-const operationWhitelist = ["tagsQuery", "catalogItemsQuery", "getGridFiltersQuery", "tagQuery"]
+const OPERATION_NAME_WHITELIST_RESPONSE_CACHE = process.env.OPERATION_NAME_WHITELIST_RESPONSE_CACHE
+
+let whitelistCacheOperationName
+
+if (OPERATION_NAME_WHITELIST_RESPONSE_CACHE) {
+  whitelistCacheOperationName = OPERATION_NAME_WHITELIST_RESPONSE_CACHE.split(',').filter(el => el !== "")
+} else {
+  whitelistCacheOperationName = ["tagsQuery", "catalogItemsQuery", "getGridFiltersQuery", "tagQuery"]
+}
+
 const DEFAULT_GRAPHQL_PATH = "/graphql-beta";
 const ENABLE_RESPONSE_CACHE = process.env.ENABLE_RESPONSE_CACHE
 
@@ -55,7 +64,7 @@ export default function createApolloServer(options = {}) {
               if (ENABLE_RESPONSE_CACHE) {
                 try {
                   const operationName = requestContext.request.operationName
-                  if (operationWhitelist.includes(operationName)) {
+                  if (whitelistCacheOperationName.includes(operationName)) {
                     const key = md5(JSON.stringify({ 
                       operationName: requestContext.request.operationName,
                       query: requestContext.request.query,
@@ -131,7 +140,7 @@ export default function createApolloServer(options = {}) {
     app.all("/graphql-beta", async (req, res, next) => {
       try {
         const operationName = req.body.operationName
-        if (operationWhitelist.includes(operationName)) {
+        if (whitelistCacheOperationName.includes(operationName)) {
           const key = md5(JSON.stringify({ 
             operationName: req.body.operationName,  
             query: req.body.query,
