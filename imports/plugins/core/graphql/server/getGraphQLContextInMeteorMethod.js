@@ -1,5 +1,5 @@
 import buildContext from "/imports/node-app/core/util/buildContext";
-import collections from "/imports/collections/rawCollections";
+// import collections from "/imports/collections/rawCollections";
 import { Meteor } from "meteor/meteor";
 
 let baseContext = {};
