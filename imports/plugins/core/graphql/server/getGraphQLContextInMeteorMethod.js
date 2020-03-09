@@ -1,5 +1,6 @@
 import buildContext from "/imports/node-app/core/util/buildContext";
 import collections from "/imports/collections/rawCollections";
+import { Meteor } from "meteor/meteor";
 
 let baseContext = {};
 
@@ -39,7 +40,8 @@ export function getBaseContext() {
 export default async function getGraphQLContextInMeteorMethod(userId) {
   let user;
   if (userId) {
-    user = await collections.users.findOne({ _id: userId });
+    // user = await collections.users.findOne({ _id: userId });
+    user = await Meteor.users.findOne({ _id: userId });
     if (!user) throw new Error(`No user found with ID ${userId}`);
   }
 
