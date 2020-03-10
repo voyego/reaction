@@ -21,7 +21,7 @@ function formatDateForEmail(date) {
   const paddedMonth = month > 9 ? `${month}` : `0${month}`; // generate padded month if necessary
   const paddedDay = day > 9 ? `${day}` : `0${day}`; // generate padded days if necessary
 
-  return `${paddedMonth}/${paddedDay}/${year}`; // return MM/DD/YYYY formatted string
+  return `${paddedDay}.${paddedMonth}.${year}`; // return MM/DD/YYYY formatted string
 }
 
 /**
@@ -52,25 +52,31 @@ export default async function getDataForOrderEmail(context, { order }) {
 
   const shippingAddressForEmail = shippingAddress ? {
     address: `${shippingAddress.address1}${shippingAddress.address2 ? ` ${shippingAddress.address2}` : ""}`,
+    houseNumber: shippingAddress.houseNumber,
     city: shippingAddress.city,
     region: shippingAddress.region,
-    postal: shippingAddress.postal
+    postal: shippingAddress.postal,
+    country: shippingAddress.country
   } : null;
 
   let billingAddressForEmail = null;
   if (order.billingAddress) {
     billingAddressForEmail = {
       address: `${order.billingAddress.address1}${order.billingAddress.address2 ? ` ${order.billingAddress.address2}` : ""}`,
+      houseNumber: order.billingAddress.houseNumber,
       city: order.billingAddress.city,
       region: order.billingAddress.region,
-      postal: order.billingAddress.postal
+      postal: order.billingAddress.postal,
+      country: order.billingAddress.country
     };
   } else if (paymentBillingAddress) {
     billingAddressForEmail = {
       address: `${paymentBillingAddress.address1}${paymentBillingAddress.address2 ? ` ${paymentBillingAddress.address2}` : ""}`,
+      houseNumber: paymentBillingAddress.houseNumber,
       city: paymentBillingAddress.city,
       region: paymentBillingAddress.region,
-      postal: paymentBillingAddress.postal
+      postal: paymentBillingAddress.postal,
+      country: paymentBillingAddress.country
     };
   }
 
