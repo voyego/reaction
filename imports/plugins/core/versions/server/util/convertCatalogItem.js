@@ -159,8 +159,8 @@ export default function convertCatalogItem(item, shop) {
       [shop.currency]: {
         compareAtPrice: item.compareAtPrice || null,
         displayPrice: productPriceInfo.range,
-        maxPrice: productPriceInfo.max,
-        minPrice: productPriceInfo.min,
+        maxPrice: [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY].includes(productPriceInfo.max) ? 0 : productPriceInfo.max,
+        minPrice: [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY].includes(productPriceInfo.min) ? 0 : productPriceInfo.min,
         price: null
       }
     },

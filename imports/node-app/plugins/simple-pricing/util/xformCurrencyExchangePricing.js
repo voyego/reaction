@@ -53,8 +53,8 @@ export default async function xformCurrencyExchangePricing(pricing, currencyCode
     compareAtPrice: compareAtPriceConverted,
     displayPrice,
     price: priceConverted,
-    minPrice: minPriceConverted,
-    maxPrice: maxPriceConverted,
+    minPrice: [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY].includes(minPriceConverted) ? 0 : minPriceConverted,
+    maxPrice: [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY].includes(maxPriceConverted) ? 0 : maxPriceConverted,
     currency: {
       code: currencyCode
     }

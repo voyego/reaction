@@ -10,8 +10,8 @@ function getPricingObject(doc, priceInfo) {
   return {
     compareAtPrice: doc.compareAtPrice || null,
     displayPrice: priceInfo.range,
-    maxPrice: priceInfo.max,
-    minPrice: priceInfo.min,
+    maxPrice: [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY].includes(priceInfo.max) ? 0 : priceInfo.max,
+    minPrice: [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY].includes(priceInfo.min) ? 0 : priceInfo.min,
     price: typeof doc.price === "number" ? doc.price : null
   };
 }

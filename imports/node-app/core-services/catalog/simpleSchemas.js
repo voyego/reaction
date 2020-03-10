@@ -383,6 +383,21 @@ export const CatalogProduct = new SimpleSchema({
     label: "Is deleted",
     defaultValue: false
   },
+  "isBackorder": {
+    type: Boolean,
+    label: "Is backorder",
+    defaultValue: false
+  },
+  "isLowQuantity": {
+    type: Boolean,
+    label: "Is low quantity",
+    defaultValue: false
+  },
+  "isSoldOut": {
+    type: Boolean,
+    label: "Is sold out",
+    defaultValue: false
+  },
   "isVisible": {
     type: Boolean,
     label: "Indicates if a product is visible to non-admin users",
