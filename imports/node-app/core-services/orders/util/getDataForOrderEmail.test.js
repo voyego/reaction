@@ -97,7 +97,9 @@ test("returns expected data structure (base case)", async () => {
         address: "mockAddress1 mockAddress2",
         city: "mockCity",
         postal: "mockPostal",
-        region: "mockRegion"
+        region: "mockRegion",
+        houseNumber: "mockHouseNumber",
+        country: "mockCountry"
       },
       adjustedTotal: jasmine.any(String),
       discounts: jasmine.any(String),
@@ -108,7 +110,8 @@ test("returns expected data structure (base case)", async () => {
           bankDetails:  null,
           isCashpresso: jasmine.any(Boolean),
           isInAdvance: jasmine.any(Boolean),
-          isInSantanderManual: jasmine.any(Boolean)
+          isInSantanderManual: jasmine.any(Boolean),
+          isInSantanderManualDe: jasmine.any(Boolean)
         }
       ],
       refunds: jasmine.any(String),
@@ -201,7 +204,9 @@ test("returns expected data structure (base case)", async () => {
         address: "mockAddress1 mockAddress2",
         city: "mockCity",
         postal: "mockPostal",
-        region: "mockRegion"
+        region: "mockRegion",
+        houseNumber: "mockHouseNumber",
+        country: "mockCountry"
       },
       carrier: "mockCarrier",
       tracking: "mockTracking"
