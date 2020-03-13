@@ -169,6 +169,7 @@ const mockCatalogProduct = {
   height: 11.23,
   isDeleted: false,
   isVisible: false,
+  isArchived: false,
   length: 5.67,
   media: [{
     URLs: {

@@ -53,6 +53,7 @@ test("returns expected data structure (base case)", async () => {
     product: Factory.CatalogProduct.makeOne({
       isDeleted: false,
       isVisible: true,
+      isArchived: true,
       variants: Factory.CatalogProductVariant.makeMany(1, {
         media: [
           {
@@ -235,6 +236,7 @@ test("storefrontUrls is optional", async () => {
     product: Factory.CatalogProduct.makeOne({
       isDeleted: false,
       isVisible: true,
+      isArchived: true,
       variants: Factory.CatalogProductVariant.makeMany(1, {
         media: [
           {
@@ -277,6 +279,7 @@ test("storefrontUrls does not use :token", async () => {
     product: Factory.CatalogProduct.makeOne({
       isDeleted: false,
       isVisible: true,
+      isArchived: true,
       variants: Factory.CatalogProductVariant.makeMany(1, {
         media: [
           {

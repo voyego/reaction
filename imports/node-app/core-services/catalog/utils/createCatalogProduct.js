@@ -93,6 +93,7 @@ export async function xformProduct({ context, product, variants }) {
     height: product.height,
     isDeleted: !!product.isDeleted,
     isVisible: !!product.isVisible,
+    isArchived: !!product.isArchived,
     isBackorder: !!product.isBackorder,
     isLowQuantity: !!product.isLowQuantity,
     isSoldOut: !!product.isSoldOut,
