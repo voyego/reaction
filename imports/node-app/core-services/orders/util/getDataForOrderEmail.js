@@ -162,10 +162,12 @@ export default async function getDataForOrderEmail(context, { order }) {
 
   const isInAdvance = isInAdvancePayment(order);
   const isInSantanderManual = isInSantanderManualPayment(order);
+  const isInSantanderManualDe = isInSantanderManualDePayment(order);
   const isCashpresso = isCashpressoPayment(order);
 
   let bankDetails = null;
-  if (isInAdvance || isInSantanderManual) {
+  // TODO: Why do we need bank details in santander manual de?
+  if (isInAdvance || isInSantanderManual || isInSantanderManualDe) {
     const paymentShopId = getPaymentShopId(order);
     bankDetails = await getBankDetails(context, paymentShopId);
   }
@@ -226,6 +228,7 @@ export default async function getDataForOrderEmail(context, { order }) {
         displayAmount: formatMoney(payment.amount * userCurrencyExchangeRate, userCurrency),
         isInAdvance,
         isInSantanderManual,
+        isInSantanderManualDe,
         isCashpresso,
         bankDetails
       })),
@@ -347,6 +350,11 @@ function isInAdvancePayment(order) {
 function isInSantanderManualPayment(order) {
   // string set in reaction-plugin-payment-in-advance
   return order.payments[0].name === "santander_manual";
+}
+
+function isInSantanderManualDePayment(order) {
+  // string set in reaction-plugin-payment-in-advance
+  return order.payments[0].name === "santander_manual_de";
 }
 
 function isCashpressoPayment(order) {
