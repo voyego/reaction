@@ -87,6 +87,7 @@ const mockProduct = {
   height: 11.23,
   isDeleted: false,
   isVisible: true,
+  isArchived: true,
   length: 5.67,
   metafields: [
     {

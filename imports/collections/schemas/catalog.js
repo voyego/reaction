@@ -256,6 +256,7 @@ export const CatalogVariantSchema = VariantBaseSchema.clone().extend({
  * @property {String} description optional
  * @property {Number} height optional, default value: `0`
  * @property {Boolean} isVisible required, default value: `false`
+ * @property {Boolean} isArchived required, default value: `false`
  * @property {Number} length optional, default value: `0`
  * @property {ImageInfo[]} media optional
  * @property {Metafield[]} metafields optional
@@ -315,6 +316,11 @@ export const CatalogProduct = new SimpleSchema({
   "isVisible": {
     type: Boolean,
     label: "Indicates if a product is visible to non-admin users",
+    defaultValue: false
+  },
+  "isArchived": {
+    type: Boolean,
+    label: "Indicates if a product is marked as archived in ERP",
     defaultValue: false
   },
   "length": {

@@ -238,6 +238,7 @@ registerSchema("ProductVariant", ProductVariant);
  * @property {String[]} hashtags optional
  * @property {Boolean} isDeleted, default value: `false`
  * @property {Boolean} isVisible, default value: `false`
+ * @property {Boolean} isArchived, default value: `false`
  * @property {String} metaDescription optional
  * @property {Metafield[]} metafields optional
  * @property {String} originCountry optional
@@ -309,6 +310,10 @@ export const Product = new SimpleSchema({
     defaultValue: false
   },
   "isVisible": {
+    type: Boolean,
+    defaultValue: false
+  },
+  "isArchived": {
     type: Boolean,
     defaultValue: false
   },
