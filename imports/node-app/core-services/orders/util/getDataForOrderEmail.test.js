@@ -95,6 +95,11 @@ test("returns expected data structure (base case)", async () => {
   expect(data).toEqual({
     billing: {
       address: {
+        honorifics: "mockHonorifics",
+        firstName: "mockFirstName",
+        lastName: "mockLastName",
+        phone: "mockPhone",
+        title: "mockTitle",
         address: "mockAddress1 mockAddress2",
         city: "mockCity",
         postal: "mockPostal",
@@ -202,6 +207,11 @@ test("returns expected data structure (base case)", async () => {
     },
     shipping: {
       address: {
+        honorifics: "mockHonorifics",
+        firstName: "mockFirstName",
+        lastName: "mockLastName",
+        phone: "mockPhone",
+        title: "mockTitle",
         address: "mockAddress1 mockAddress2",
         city: "mockCity",
         postal: "mockPostal",

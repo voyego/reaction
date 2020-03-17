@@ -51,6 +51,11 @@ export default async function getDataForOrderEmail(context, { order }) {
   const { address: paymentBillingAddress, currency } = firstPayment || {};
 
   const shippingAddressForEmail = shippingAddress ? {
+      honorifics: shippingAddress.honorifics,
+      firstName: shippingAddress.firstName,
+      lastName: shippingAddress.lastName,
+      phone: shippingAddress.phone,
+      title: shippingAddress.title,
     address: `${shippingAddress.address1}${shippingAddress.address2 ? ` ${shippingAddress.address2}` : ""}`,
     houseNumber: shippingAddress.houseNumber,
     city: shippingAddress.city,
@@ -62,6 +67,11 @@ export default async function getDataForOrderEmail(context, { order }) {
   let billingAddressForEmail = null;
   if (order.billingAddress) {
     billingAddressForEmail = {
+      honorifics: order.billingAddress.honorifics,
+      firstName: order.billingAddress.firstName,
+      lastName: order.billingAddress.lastName,
+      phone: order.billingAddress.phone,
+      title: order.billingAddress.title,
       address: `${order.billingAddress.address1}${order.billingAddress.address2 ? ` ${order.billingAddress.address2}` : ""}`,
       houseNumber: order.billingAddress.houseNumber,
       city: order.billingAddress.city,
@@ -71,6 +81,11 @@ export default async function getDataForOrderEmail(context, { order }) {
     };
   } else if (paymentBillingAddress) {
     billingAddressForEmail = {
+      honorifics: paymentBillingAddress.honorifics,
+      firstName: paymentBillingAddress.firstName,
+      lastName: paymentBillingAddress.lastName,
+      phone: paymentBillingAddress.phone,
+      title: paymentBillingAddress.title,
       address: `${paymentBillingAddress.address1}${paymentBillingAddress.address2 ? ` ${paymentBillingAddress.address2}` : ""}`,
       houseNumber: paymentBillingAddress.houseNumber,
       city: paymentBillingAddress.city,
