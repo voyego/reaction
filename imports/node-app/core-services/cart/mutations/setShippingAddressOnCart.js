@@ -1,4 +1,5 @@
 import SimpleSchema from "simpl-schema";
+import * as R from 'ramda'
 import Random from "@reactioncommerce/random";
 import { CartAddress as AddressSchema } from "../simpleSchemas.js";
 import getCartById from "../util/getCartById.js";
@@ -37,7 +38,10 @@ export default async function setShippingAddressOnCart(context, input) {
   const updatedFulfillmentGroups = (cart.shipping || []).map((group) => {
     if (group.type === "shipping") {
       didModify = true;
-      return { ...group, address };
+      // shipmentMethod contains whether shipment has been selected
+      // we need to deselect shipmentMethod on shipping address change
+      // because depending on shipping address different options are provided
+      return { ...R.omit(['shipmentMethod'], group), address };
     }
     return group;
   });
