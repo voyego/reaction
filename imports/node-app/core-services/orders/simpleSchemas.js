@@ -171,6 +171,10 @@ export const OrderAddress = new SimpleSchema({
     type: String,
     optional: true
   },
+  birthdate: {
+    type: Date,
+    optional: true
+  },
   houseNumber: {
     type: String,
     optional: true
@@ -714,6 +718,25 @@ const OrderItemAttribute = new SimpleSchema({
   }
 });
 
+const HepsterData = new SimpleSchema({
+  price: {
+    type: Number,
+    optional: true
+  },
+  coveragePrice: {
+    type: Number,
+    optional: true
+  },
+  qualityId: {
+    type: String,
+    optional: true
+  },
+  productId: {
+    type: String,
+    optional: true
+  }
+});
+
 /**
  * @name OrderItem
  * @memberof Schemas
@@ -795,6 +818,10 @@ export const OrderItem = new SimpleSchema({
     optional: true
   },
   "productTagIds.$": String,
+  "hepster": {
+    type: HepsterData,
+    optional: true
+  },
   "productVendor": {
     label: "Product Vendor",
     type: String,

@@ -96,6 +96,7 @@ test("returns expected data structure (base case)", async () => {
     billing: {
       address: {
         honorifics: "mockHonorifics",
+        birthdate: "mockBirthdate",
         firstName: "mockFirstName",
         lastName: "mockLastName",
         phone: "mockPhone",
@@ -208,6 +209,7 @@ test("returns expected data structure (base case)", async () => {
     shipping: {
       address: {
         honorifics: "mockHonorifics",
+        birthdate: "mockBirthdate",
         firstName: "mockFirstName",
         lastName: "mockLastName",
         phone: "mockPhone",

@@ -51,11 +51,12 @@ export default async function getDataForOrderEmail(context, { order }) {
   const { address: paymentBillingAddress, currency } = firstPayment || {};
 
   const shippingAddressForEmail = shippingAddress ? {
-      honorifics: shippingAddress.honorifics,
-      firstName: shippingAddress.firstName,
-      lastName: shippingAddress.lastName,
-      phone: shippingAddress.phone,
-      title: shippingAddress.title,
+    honorifics: shippingAddress.honorifics,
+    birthdate: shippingAddress.birthdate,
+    firstName: shippingAddress.firstName,
+    lastName: shippingAddress.lastName,
+    phone: shippingAddress.phone,
+    title: shippingAddress.title,
     address: `${shippingAddress.address1}${shippingAddress.address2 ? ` ${shippingAddress.address2}` : ""}`,
     houseNumber: shippingAddress.houseNumber,
     city: shippingAddress.city,
@@ -68,6 +69,7 @@ export default async function getDataForOrderEmail(context, { order }) {
   if (order.billingAddress) {
     billingAddressForEmail = {
       honorifics: order.billingAddress.honorifics,
+      birthdate: order.billingAddress.birthdate,
       firstName: order.billingAddress.firstName,
       lastName: order.billingAddress.lastName,
       phone: order.billingAddress.phone,
@@ -82,6 +84,7 @@ export default async function getDataForOrderEmail(context, { order }) {
   } else if (paymentBillingAddress) {
     billingAddressForEmail = {
       honorifics: paymentBillingAddress.honorifics,
+      birthdate: paymentBillingAddress.birthdate,
       firstName: paymentBillingAddress.firstName,
       lastName: paymentBillingAddress.lastName,
       phone: paymentBillingAddress.phone,

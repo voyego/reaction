@@ -183,6 +183,48 @@ export const OrderItemAttribute = new SimpleSchema({
   }
 });
 
+const HepsterResponse = new SimpleSchema({
+  "success": {
+    type: Object,
+    optional: true
+  },
+  "success.id": {
+    type: String,
+    optional: true
+  },
+  "success.orderDate": {
+    type: String,
+    optional: true
+  },
+  "error": {
+    type: Object,
+    optional: true
+  }
+})
+
+const HepsterData = new SimpleSchema({
+  price: {
+    type: Number,
+    optional: true
+  },
+  coveragePrice: {
+    type: Number,
+    optional: true
+  },
+  qualityId: {
+    type: String,
+    optional: true
+  },
+  productId: {
+    type: String,
+    optional: true
+  },
+  response: {
+    type: HepsterResponse,
+    optional: true
+  },
+});
+
 /**
  * @name OrderItem
  * @memberof Schemas
@@ -264,6 +306,10 @@ export const OrderItem = new SimpleSchema({
     optional: true
   },
   "productTagIds.$": String,
+  "hepster": {
+    type: HepsterData,
+    optional: true
+  },
   "productVendor": {
     label: "Product Vendor",
     type: String,

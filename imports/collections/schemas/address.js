@@ -135,6 +135,10 @@ export const Address = new SimpleSchema({
     type: String,
     optional: true
   },
+  birthdate: {
+    type: Date,
+    optional: true
+  },
   houseNumber: {
     type: String,
     optional: true
