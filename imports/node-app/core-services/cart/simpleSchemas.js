@@ -983,5 +983,10 @@ export const Cart = new SimpleSchema({
   "deliveryOption": {
     type: String,
     optional: true
+  },
+  "isBillingSameAsShipping": {
+    type: Boolean,
+    defaultValue: true,
+    optional: true
   }
 });
