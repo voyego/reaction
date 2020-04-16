@@ -876,6 +876,25 @@ export const CartItem = new SimpleSchema({
 });
 
 /**
+ * @name StripeKlarna
+ * @memberof Schemas
+ * @type {SimpleSchema}
+ * @property {String} clienttoken optional
+ * @property {String} sourceId optional
+ */
+const StripeKlarna = new SimpleSchema({
+  clientToken: {
+    type: String,
+    optional: true
+  },
+  sourceId: {
+    type: String,
+    optional: true
+  }
+})
+
+
+/**
  * @name Cart
  * @memberof Schemas
  * @type {SimpleSchema}
@@ -893,6 +912,7 @@ export const CartItem = new SimpleSchema({
  * @property {Workflow} workflow optional
  * @property {Date} createdAt required
  * @property {Date} updatedAt optional
+ * @property {StripeKlarna} stripeKlarna optional
  */
 export const Cart = new SimpleSchema({
   "_id": {
@@ -987,6 +1007,10 @@ export const Cart = new SimpleSchema({
   "isBillingSameAsShipping": {
     type: Boolean,
     defaultValue: true,
+  },
+  "stripeKlarna": {
+    type: StripeKlarna,
     optional: true
   }
 });
+

@@ -76,6 +76,7 @@ async function getCurrencyExchangeObject(collections, cartCurrencyCode, shopId, 
  * @returns {Object[]} Array of created payments
  */
 async function createPayments({
+  cart,
   accountId,
   billingAddress,
   context,
@@ -116,6 +117,7 @@ async function createPayments({
 
     // Authorize this payment
     const payment = await paymentMethodConfig.functions.createAuthorizedPayment(context, {
+      cart,
       accountId, // optional
       amount,
       billingAddress: paymentInput.billingAddress || billingAddress,
@@ -234,6 +236,7 @@ export default async function placeOrder(context, input) {
   const currencyExchangeInfo = await getCurrencyExchangeObject(collections, currencyCode, shopId, account);
 
   const payments = await createPayments({
+    cart,
     accountId,
     billingAddress,
     context,

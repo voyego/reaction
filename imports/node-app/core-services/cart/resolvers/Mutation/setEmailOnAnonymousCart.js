@@ -15,6 +15,7 @@ import { decodeCartOpaqueId } from "@reactioncommerce/reaction-graphql-xforms/ca
  * @returns {Promise<Object>} SetEmailOnAnonymousCartPayload
  */
 export default async function setEmailOnAnonymousCart(parentResult, { input }, context) {
+  const { appEvents } = context
   const {
     cartId: opaqueCartId,
     clientMutationId = null,
@@ -28,6 +29,11 @@ export default async function setEmailOnAnonymousCart(parentResult, { input }, c
     cartId,
     email,
     token
+  });
+
+  appEvents.emit("afterCartUpdate", {
+    type: 'anonymous-email',
+    cart
   });
 
   return {
