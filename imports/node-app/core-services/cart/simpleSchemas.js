@@ -1007,6 +1007,7 @@ export const Cart = new SimpleSchema({
   "isBillingSameAsShipping": {
     type: Boolean,
     defaultValue: true,
+    optional: true
   },
   "stripeKlarna": {
     type: StripeKlarna,
