@@ -179,7 +179,13 @@ export default async function getDataForOrderEmail(context, { order }) {
   const isInSantanderManual = isInSantanderManualPayment(order);
   const isInSantanderManualDe = isInSantanderManualDePayment(order);
   const isCashpresso = isCashpressoPayment(order);
+  const isCreated = isCreatedPayment(order);
+  const isCompleted = isCompletedPayment(order);
+  const isFailed = isFailedPayment(order);
+  const isCanceled = isCanceledPayment(order);
 
+
+  
   let bankDetails = null;
   // TODO: Why do we need bank details in santander manual de?
   if (isInAdvance || isInSantanderManual || isInSantanderManualDe) {
@@ -245,6 +251,10 @@ export default async function getDataForOrderEmail(context, { order }) {
         isInSantanderManual,
         isInSantanderManualDe,
         isCashpresso,
+        isCreated,
+        isCompleted,
+        isFailed,
+        isCanceled,
         bankDetails
       })),
       subtotal: formatMoney(subtotal * userCurrencyExchangeRate, userCurrency),
@@ -375,4 +385,20 @@ function isInSantanderManualDePayment(order) {
 function isCashpressoPayment(order) {
   // string set in reaction-plugin-payment-in-advance
   return order.payments[0].name === "cashpresso_instalment";
+}
+
+function isCreatedPayment(order) {
+  return order.payments[0].status === "created";
+}
+
+function isCompletedPayment(order) {
+  return order.payments[0].status === "completed";
+}
+
+function isFailedPayment(order) {
+  return order.payments[0].status === "failed";
+}
+
+function isCanceledPayment(order) {
+  return order.payments[0].status === "canceled";
 }

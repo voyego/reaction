@@ -28,7 +28,7 @@ const inputSchema = new SimpleSchema({
 export default async function removeCartItems(context, input) {
   inputSchema.validate(input || {});
 
-  const { accountId, collections } = context;
+  const { appEvents, accountId, collections } = context;
   const { Cart } = collections;
   const { cartId, cartItemIds, token } = input;
 
@@ -51,6 +51,11 @@ export default async function removeCartItems(context, input) {
   };
 
   const savedCart = await context.mutations.saveCart(context, updatedCart);
+
+  await appEvents.emit("afterCartUpdate", {
+    cart: savedCart,
+    type: "deleteItem"
+  })
 
   return { cart: savedCart };
 }
