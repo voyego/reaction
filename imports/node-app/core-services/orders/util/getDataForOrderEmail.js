@@ -179,6 +179,7 @@ export default async function getDataForOrderEmail(context, { order }) {
   const isInSantanderManual = isInSantanderManualPayment(order);
   const isInSantanderManualDe = isInSantanderManualDePayment(order);
   const isCashpresso = isCashpressoPayment(order);
+  const isKlarna = isKlarnaPayment(order);
   const isCreated = isCreatedPayment(order);
   const isCompleted = isCompletedPayment(order);
   const isFailed = isFailedPayment(order);
@@ -251,6 +252,7 @@ export default async function getDataForOrderEmail(context, { order }) {
         isInSantanderManual,
         isInSantanderManualDe,
         isCashpresso,
+        isKlarna,
         isCreated,
         isCompleted,
         isFailed,
@@ -385,6 +387,10 @@ function isInSantanderManualDePayment(order) {
 function isCashpressoPayment(order) {
   // string set in reaction-plugin-payment-in-advance
   return order.payments[0].name === "cashpresso_instalment";
+}
+
+function isKlarnaPayment (order) {
+  return order.payments[0].name === "klarna";
 }
 
 function isCreatedPayment(order) {
