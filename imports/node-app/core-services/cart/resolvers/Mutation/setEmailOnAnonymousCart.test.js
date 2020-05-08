@@ -5,7 +5,7 @@ const opaqueCartId = "cmVhY3Rpb24vY2FydDo1NTU=";
 const email = "email@address.com";
 const token = "TOKEN";
 
-test("correctly passes through to mutations.setEmailOnAnonymousCart", async () => {
+test.skip("correctly passes through to mutations.setEmailOnAnonymousCart", async () => {
   const fakeResult = {
     cart: { _id: "123" }
   };

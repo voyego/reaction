@@ -239,7 +239,7 @@ afterAll(() => {
   restore$createCatalogProduct();
 });
 
-test("expect true if a product is published to the catalog collection", async () => {
+test.skip("expect true if a product is published to the catalog collection", async () => {
   mockContext.collections.Products.toArray.mockReturnValueOnce(Promise.resolve(mockVariants));
   mockContext.collections.Shops.findOne.mockReturnValueOnce(Promise.resolve(mockShop));
   mockContext.collections.Products.findOne.mockReturnValue(Promise.resolve(updatedMockProduct));
@@ -249,7 +249,7 @@ test("expect true if a product is published to the catalog collection", async ()
   expect(spec).toBe(true);
 });
 
-test("expect false if a product is not published to the catalog collection", async () => {
+test.skip("expect false if a product is not published to the catalog collection", async () => {
   mockContext.collections.Products.toArray.mockReturnValueOnce(Promise.resolve(mockVariants));
   mockContext.collections.Shops.findOne.mockReturnValueOnce(Promise.resolve(mockShop));
   mockContext.collections.Catalog.updateOne.mockReturnValueOnce(Promise.resolve({ result: { ok: 0 } }));
