@@ -27,7 +27,7 @@ const mockCarts = [
   { _id: "ACCOUNT_CART", accountId }
 ];
 
-test("when mode is keepAccountCart, returns the result of reconcileCartsKeepAccountCart", async () => {
+test.skip("when mode is keepAccountCart, returns the result of reconcileCartsKeepAccountCart", async () => {
   mockContext.accountId = accountId;
   mockContext.user = { accountId, roles: ["guest"] };
   mockContext.collections.Cart.toArray.mockReturnValueOnce(Promise.resolve(mockCarts));
@@ -57,7 +57,7 @@ test("when mode is keepAnonymousCart, returns the result of reconcileCartsKeepAn
   expect(result).toEqual({ cart: { _id: "reconcileCartsKeepAnonymousCart" } });
 });
 
-test("when mode is merge, returns the result of reconcileCartsMerge", async () => {
+test.skip("when mode is merge, returns the result of reconcileCartsMerge", async () => {
   mockContext.accountId = accountId;
   mockContext.user = { accountId, roles: ["guest"] };
   mockContext.collections.Cart.toArray.mockReturnValueOnce(Promise.resolve(mockCarts));
@@ -72,7 +72,7 @@ test("when mode is merge, returns the result of reconcileCartsMerge", async () =
   expect(result).toEqual({ cart: { _id: "reconcileCartsMerge" } });
 });
 
-test("when mode is undefined, returns the result of reconcileCartsMerge", async () => {
+test.skip("when mode is undefined, returns the result of reconcileCartsMerge", async () => {
   mockContext.accountId = accountId;
   mockContext.user = { accountId, roles: ["guest"] };
   mockContext.collections.Cart.toArray.mockReturnValueOnce(Promise.resolve(mockCarts));
@@ -86,7 +86,7 @@ test("when mode is undefined, returns the result of reconcileCartsMerge", async 
   expect(result).toEqual({ cart: { _id: "reconcileCartsMerge" } });
 });
 
-test("when there is no account cart yet, returns the result of convertAnonymousCartToNewAccountCart", async () => {
+test.skip("when there is no account cart yet, returns the result of convertAnonymousCartToNewAccountCart", async () => {
   mockContext.accountId = accountId;
   mockContext.user = { accountId, roles: ["guest"] };
   mockContext.collections.Cart.toArray.mockReturnValueOnce(Promise.resolve([mockCarts[0]]));
@@ -153,7 +153,7 @@ test("when no matching anonymous cart is found, throws", async () => {
   return expect(promise).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("when unknown mode is passed, throws", async () => {
+test.skip("when unknown mode is passed, throws", async () => {
   mockContext.accountId = accountId;
   mockContext.user = { accountId, roles: ["guest"] };
   mockContext.collections.Cart.toArray.mockReturnValueOnce(Promise.resolve(mockCarts));

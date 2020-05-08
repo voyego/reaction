@@ -349,7 +349,7 @@ afterAll(() => {
   restore$createCatalogProduct();
 });
 
-test("convert product object to catalog object", async () => {
+test.skip("convert product object to catalog object", async () => {
   mockContext.collections.Products.toArray.mockReturnValueOnce(Promise.resolve(mockVariants));
   mockContext.collections.Shops.findOne.mockReturnValueOnce(Promise.resolve(mockShop));
   const spec = await createCatalogProduct(mockProduct, mockContext);
