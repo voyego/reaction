@@ -229,6 +229,10 @@ const OptionsSchema = new SimpleSchema({
   "price.EUR.range": {
     type: String,
     optional: true
+  },
+  "price.EUR.listPrice": {
+    type: Number,
+    optional: true
   }
 });
 
