@@ -15,6 +15,14 @@ const SystemSchema = new SimpleSchema({
   priceDiscountMileage: {
     type: String,
     defaultValue: 0
+  },
+  inventoryInStock: {
+    type: Number,
+    defaultValue: 0
+  },
+  inventoryReserved: {
+    type: Number,
+    defaultValue: 0
   }
 });
 
