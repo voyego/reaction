@@ -184,6 +184,7 @@ export default async function getDataForOrderEmail(context, { order }) {
   const isCompleted = isCompletedPayment(order);
   const isFailed = isFailedPayment(order);
   const isCanceled = isCanceledPayment(order);
+  const isCanceledOrder = isCanceledOrderCheck(order);
 
 
   
@@ -241,7 +242,8 @@ export default async function getDataForOrderEmail(context, { order }) {
     },
     order: {
       ...order,
-      shipping: adjustedOrderGroups
+      shipping: adjustedOrderGroups,
+      isCanceledOrder
     },
     billing: {
       address: billingAddressForEmail,
@@ -407,4 +409,8 @@ function isFailedPayment(order) {
 
 function isCanceledPayment(order) {
   return order.payments[0].status === "canceled";
+}
+
+function isCanceledOrderCheck(order) {
+  return order.workflow.status === "coreOrderWorkflow/canceled";
 }
