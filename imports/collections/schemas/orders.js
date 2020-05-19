@@ -198,7 +198,8 @@ const HepsterResponse = new SimpleSchema({
   },
   "error": {
     type: Object,
-    optional: true
+    optional: true,
+    blackbox: true
   }
 })
 
