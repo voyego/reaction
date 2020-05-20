@@ -171,7 +171,7 @@ export const OrderAddress = new SimpleSchema({
     type: String,
     optional: true
   },
-  birthdate: {
+  dateOfBirth: {
     type: Date,
     optional: true
   },
