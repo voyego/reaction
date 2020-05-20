@@ -95,6 +95,25 @@ const CartItemAttribute = new SimpleSchema({
   }
 });
 
+const HepsterData = new SimpleSchema({
+  price: {
+    type: Number,
+    optional: true
+  },
+  coveragePrice: {
+    type: Number,
+    optional: true
+  },
+  qualityId: {
+    type: String,
+    optional: true
+  },
+  productId: {
+    type: String,
+    optional: true
+  }
+});
+
 /**
  * @name CartItem
  * @memberof Schemas
@@ -165,6 +184,10 @@ export const CartItem = new SimpleSchema({
     optional: true
   },
   "productTagIds.$": String,
+  "hepster": {
+    type: HepsterData,
+    optional: true
+  },
   "productVendor": {
     label: "Product Vendor",
     type: String,

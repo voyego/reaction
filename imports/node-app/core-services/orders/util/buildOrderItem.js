@@ -79,6 +79,7 @@ export default async function buildOrderItem(context, { currencyCode, inputItem 
     productSlug: chosenProduct.slug,
     productType: chosenProduct.type,
     productTagIds: chosenProduct.tagIds,
+    hepster: chosenProduct.hepster,
     productVendor: chosenProduct.vendor,
     quantity,
     shopId: chosenProduct.shopId,
