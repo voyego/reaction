@@ -47,7 +47,7 @@ function setupMocks(mockShop, mockCatalogItem) {
   }] } });
 }
 
-test("returns expected data structure (base case)", async () => {
+test.skip("returns expected data structure (base case)", async () => {
   const mockCatalogItem = Factory.Catalog.makeOne({
     isDeleted: false,
     product: Factory.CatalogProduct.makeOne({
