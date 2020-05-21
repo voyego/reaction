@@ -976,6 +976,10 @@ export const Cart = new SimpleSchema({
     optional: true,
     regEx: SimpleSchema.RegEx.Email
   },
+  "dateOfBirth": {
+    type: Date,
+    optional: true
+  },
   "items": {
     type: Array,
     optional: true
