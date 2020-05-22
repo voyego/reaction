@@ -15,7 +15,8 @@ export default async function buildOrderItem(context, { currencyCode, inputItem 
     addedAt,
     price,
     productConfiguration,
-    quantity
+    quantity,
+    hepster
   } = inputItem;
   const { productId, productVariantId } = productConfiguration;
 
@@ -68,6 +69,7 @@ export default async function buildOrderItem(context, { currencyCode, inputItem 
     _id: Random.id(),
     addedAt: addedAt || now,
     attributes,
+    hepster,
     createdAt: now,
     optionTitle: chosenVariant && chosenVariant.optionTitle,
     parcel: chosenVariant.parcel,
@@ -79,7 +81,6 @@ export default async function buildOrderItem(context, { currencyCode, inputItem 
     productSlug: chosenProduct.slug,
     productType: chosenProduct.type,
     productTagIds: chosenProduct.tagIds,
-    hepster: chosenProduct.hepster,
     productVendor: chosenProduct.vendor,
     quantity,
     shopId: chosenProduct.shopId,
