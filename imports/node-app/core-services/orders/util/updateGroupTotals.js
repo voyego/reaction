@@ -3,6 +3,7 @@ import addShipmentMethodToGroup from "./addShipmentMethodToGroup.js";
 import addTaxesToGroup from "./addTaxesToGroup.js";
 import compareExpectedAndActualTotals from "./compareExpectedAndActualTotals.js";
 import getSurchargesForGroup from "./getSurchargesForGroup.js";
+import { pathOr } from 'ramda'
 
 /**
  * @summary Call this with a fulfillment group when the items, item quantities, or
@@ -75,7 +76,8 @@ export default async function updateGroupTotals(context, {
     groupDiscountTotal: discountTotal,
     groupSurchargeTotal,
     taxableAmount,
-    taxTotal
+    taxTotal,
+    hepsterTotal: group.items.reduce((acc, item) => acc + pathOr(0, ['hepster', 'price'], item), 0)
   });
 
   if (expectedGroupTotal) {
