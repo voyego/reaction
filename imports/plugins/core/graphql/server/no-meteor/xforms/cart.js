@@ -1,4 +1,5 @@
 import getRateObjectForRate from "@reactioncommerce/api-utils/getRateObjectForRate.js";
+import { pathOr } from 'ramda'
 import namespaces from "@reactioncommerce/api-utils/graphql/namespaces.js";
 import ReactionError from "@reactioncommerce/reaction-error";
 import { xformCatalogProductMedia } from "./catalogProduct";
@@ -193,6 +194,7 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
 export async function xformCartCheckout(collections, cart) {
   // itemTotal is qty * amount for each item, summed
   const itemTotal = (cart.items || []).reduce((sum, item) => (sum + item.subtotal.amount), 0);
+  const hepsterTotal = (cart.items || []).reduce((sum, item) => (sum + pathOr(0, ['hepster', 'price'], item)), 0);
 
   // shippingTotal is shipmentMethod.rate for each item, summed
   // handlingTotal is shipmentMethod.handling for each item, summed
@@ -232,7 +234,7 @@ export async function xformCartCheckout(collections, cart) {
   // surchargeTotal is sum of all surcharges is qty * amount for each item, summed
   const surchargeTotal = (cart.surcharges || []).reduce((sum, surcharge) => (sum + surcharge.amount), 0);
 
-  const total = Math.max(0, itemTotal + fulfillmentTotal + taxTotal + surchargeTotal - discountTotal);
+  const total = Math.max(0, itemTotal + fulfillmentTotal + taxTotal + surchargeTotal + hepsterTotal - discountTotal);
 
   let fulfillmentTotalMoneyObject = null;
   if (fulfillmentTotal !== null) {
@@ -280,6 +282,7 @@ export async function xformCartCheckout(collections, cart) {
         amount: surchargeTotal,
         currencyCode: cart.currencyCode
       },
+      hepsterTotal,
       total: {
         amount: total,
         currencyCode: cart.currencyCode

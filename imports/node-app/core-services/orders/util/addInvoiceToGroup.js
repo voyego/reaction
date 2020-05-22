@@ -17,7 +17,8 @@ export default function addInvoiceToGroup({
   groupDiscountTotal,
   groupSurchargeTotal,
   taxableAmount,
-  taxTotal
+  taxTotal,
+  hepsterTotal
 }) {
   // Items
   const itemTotal = +toFixed(group.items.reduce((sum, item) => (sum + item.subtotal), 0), 3);
@@ -33,7 +34,7 @@ export default function addInvoiceToGroup({
   // Totals
   // To avoid rounding errors, be sure to keep this calculation the same between here and
   // `buildOrderInputFromCart.js` in the client code.
-  const total = +toFixed(Math.max(0, itemTotal + fulfillmentTotal + taxTotal + groupSurchargeTotal - groupDiscountTotal), 3);
+  const total = +toFixed(Math.max(0, itemTotal + fulfillmentTotal + taxTotal + groupSurchargeTotal + hepsterTotal - groupDiscountTotal), 3);
 
   group.invoice = {
     currencyCode,
