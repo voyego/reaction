@@ -8,6 +8,25 @@ const withoutCodeCountries = ["AO", "AG", "AW", "BS", "BZ", "BJ", "BW",
   "ST", "SA", "SC", "SL", "SB", "SO", "SR", "SY", "TZ", "TL",
   "TK", "TO", "TT", "TV", "UG", "AE", "VU", "YE", "ZW"];
 
+const HepsterData = new SimpleSchema({
+  price: {
+    type: Number,
+    optional: true
+  },
+  coveragePrice: {
+    type: Number,
+    optional: true
+  },
+  qualityId: {
+    type: String,
+    optional: true
+  },
+  productId: {
+    type: String,
+    optional: true
+  }
+});
+
 /**
  * @name Metafield
  * @memberof Schemas
@@ -439,6 +458,10 @@ export const orderItemInputSchema = new SimpleSchema({
   "quantity": {
     type: SimpleSchema.Integer,
     min: 1
+  },
+  "hepster": {
+    type: HepsterData,
+    optional: true
   }
 });
 
@@ -462,7 +485,7 @@ export const orderFulfillmentGroupInputSchema = new SimpleSchema({
   "type": {
     type: String,
     allowedValues: ["shipping"]
-  }
+  },
 });
 
 // Exported for unit tests
@@ -718,24 +741,6 @@ const OrderItemAttribute = new SimpleSchema({
   }
 });
 
-const HepsterData = new SimpleSchema({
-  price: {
-    type: Number,
-    optional: true
-  },
-  coveragePrice: {
-    type: Number,
-    optional: true
-  },
-  qualityId: {
-    type: String,
-    optional: true
-  },
-  productId: {
-    type: String,
-    optional: true
-  }
-});
 
 /**
  * @name OrderItem
