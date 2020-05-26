@@ -92,21 +92,12 @@ export default async function addCartItems(context, currentItems, inputItems, op
     // checks at the time of placing the order will ensure that unavailable items are
     // not ordered unless back-ordering is enabled.
 
-    // Until we do a more complete attributes revamp, we'll do our best to fudge attributes here.
-    if (parentVariant) {
-      GsVariantAttributes = {
-        dictionary: parentVariant.attributes.dictionary
-      }
-    }
-    GsVariantAttributes = {
-      dictionary: chosenVariant.attributes.dictionary
-    }
     const cartItem = {
       _id: Random.id(),
       compareAtPrice: null,
       isTaxable: chosenVariant.isTaxable || false,
-      metafields,
-      GsVariantAttributes,
+      variantAttributes: chosenVariant.attributes,
+      productAttributes: catalogProduct.attributes,
       optionTitle: chosenVariant.optionTitle,
       parcel: chosenVariant.parcel,
       // This one will be kept updated by event handler watching for

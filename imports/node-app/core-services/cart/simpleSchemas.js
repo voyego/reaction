@@ -1,4 +1,6 @@
 import SimpleSchema from "simpl-schema";
+import { AttributesSchema as AttributesVariantSchema } from "imports/collections/extend/productVariant";
+import { AttributesSchema as AttributesSimpleSchema } from "imports/collections/extend/productSimple";
 
 const withoutCodeCountries = ["AO", "AG", "AW", "BS", "BZ", "BJ", "BW",
   "BF", "BI", "CM", "CF", "KM", "CG", "CD", "CK", "CI", "DJ",
@@ -754,11 +756,6 @@ const OptionsSchemaVariant = new SimpleSchema({
   }
 });*/
 
-const GsVariantAttributes = new SimpleSchema({
-  dictionary: DictionarySchemaVariant
-});
-
-
 /**
  * @name CartItemAttribute
  * @memberof Schemas
@@ -830,7 +827,12 @@ export const CartItem = new SimpleSchema({
     type: Money,
     optional: true
   },
-  "GsVariantAttributes": GsVariantAttributes,
+  "productAttributes": {
+    type: AttributesSimpleSchema
+  },
+  "variantAttributes": {
+    type: AttributesVariantSchema
+  },
   "createdAt": Date,
   "metafields": {
     type: Array,
