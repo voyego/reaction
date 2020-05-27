@@ -204,6 +204,9 @@ export default async function getDataForOrderEmail(context, { order }) {
     }
   }
 
+  const translationForOrderEmailFunc = getFunctionsOfType("translationForOrderEmail");
+  const translations = translationForOrderEmailFunc[0]()
+
   const itemsWithAttributes = await Promise.all(combinedItems.map(async item => {
     const result = await getAttributes(context, item, order.ordererPreferredLanguage)
     const attributes = R.pick(['productAttributes', 'variantAttributes'], R.pathOr({}, ['0'], result))
