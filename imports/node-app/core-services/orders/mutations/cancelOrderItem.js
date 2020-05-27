@@ -161,6 +161,7 @@ export default async function cancelOrderItem(context, input) {
       status: canceledStatus,
       workflow: [...order.workflow.workflow, canceledStatus]
     };
+
     fullOrderWasCanceled = true;
   }
 
@@ -177,6 +178,10 @@ export default async function cancelOrderItem(context, input) {
   }
 
   OrderSchema.validate(modifier, { modifier: true });
+
+  if (fullOrderWasCanceled) {
+    modifier.$set["payments.$[].status"] = 'canceled'
+  }
 
   const { modifiedCount, value: updatedOrder } = await Orders.findOneAndUpdate(
     { _id: orderId },
