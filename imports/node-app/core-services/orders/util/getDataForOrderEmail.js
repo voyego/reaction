@@ -211,8 +211,8 @@ export default async function getDataForOrderEmail(context, { order }) {
     return { ...item, ...attributes, shouldDisplayMileage: shouldDisplayMileage(attributes) }
   }))
 
-const customGetDataForOrderEmailFuncs = getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
-  const customData = customGetDataForOrderEmailFuncs[0]()
+  const customGetDataForOrderEmailFuncs = getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
+  const translations = customGetDataForOrderEmailFuncs[0](order.ordererPreferredLanguage)
 
   // Merge data into single object to pass to email template
   return {
@@ -293,7 +293,7 @@ const customGetDataForOrderEmailFuncs = getFunctionsOfType('custom/getDataForOrd
       carrier,
       tracking
     },
-    customData
+    translations
   };
 }
 

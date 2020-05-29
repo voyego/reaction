@@ -20,7 +20,7 @@ const inputSchema = new SimpleSchema({
  */
 export default async function sendWelcomeEmail(context, input) {
   inputSchema.validate(input);
-  const { collections } = context;
+  const { collections, getFunctionsOfType } = context;
   const { Accounts, Shops } = collections;
   const { shopId, token, userId } = input;
 
@@ -32,6 +32,13 @@ export default async function sendWelcomeEmail(context, input) {
   const shop = await Shops.findOne({ _id: shopId });
 
   const copyrightDate = new Date().getFullYear();
+
+  const userEmail = account.emails[0].address;
+  const language = (account.profile && account.profile.language) || shop.language;
+
+  const customGetDataForAccountsWelcomeEmail = getFunctionsOfType('custom/getDataForAccountsWelcomeEmail')
+  const translations = customGetDataForAccountsWelcomeEmail[0](language)
+
   const dataForEmail = {
     // Shop Data
     contactEmail: _.get(shop, "emails[0].address"),
@@ -64,11 +71,9 @@ export default async function sendWelcomeEmail(context, input) {
         link: "https://twitter.com/GreenstormEbike"
       }
     },
-    verificationUrl: context.getAbsoluteUrl(`#/verify-email/${token}`)
+    verificationUrl: context.getAbsoluteUrl(`#/verify-email/${token}`),
+    translations
   };
-
-  const userEmail = account.emails[0].address;
-  const language = (account.profile && account.profile.language) || shop.language;
 
   await context.mutations.sendEmail(context, {
     data: dataForEmail,
