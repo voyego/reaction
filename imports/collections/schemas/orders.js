@@ -514,6 +514,9 @@ export const Order = new SimpleSchema({
   "customFields.deliveryShopId": {
     type: String
   },
+  "customFields.dateOfBirth": {
+    type: Date
+  },
   "discounts": {
     type: Array,
     optional: true
