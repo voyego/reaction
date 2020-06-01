@@ -190,10 +190,6 @@ export const OrderAddress = new SimpleSchema({
     type: String,
     optional: true
   },
-  dateOfBirth: {
-    type: Date,
-    optional: true
-  },
   houseNumber: {
     type: String,
     optional: true

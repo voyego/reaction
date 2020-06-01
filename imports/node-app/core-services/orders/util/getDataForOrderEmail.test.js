@@ -96,7 +96,6 @@ test.skip("returns expected data structure (base case)", async () => {
     billing: {
       address: {
         honorifics: "mockHonorifics",
-        dateOfBirth: "mockDateOfBirth",
         firstName: "mockFirstName",
         lastName: "mockLastName",
         phone: "mockPhone",
@@ -209,7 +208,6 @@ test.skip("returns expected data structure (base case)", async () => {
     shipping: {
       address: {
         honorifics: "mockHonorifics",
-        dateOfBirth: "mockDateOfBirth",
         firstName: "mockFirstName",
         lastName: "mockLastName",
         phone: "mockPhone",
