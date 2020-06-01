@@ -10,6 +10,14 @@ const SystemSchema = new SimpleSchema({
   priority: {
     type: Number,
     optional: true
+  },
+  isBikeOfMonth: {
+    type: Boolean,
+    optional: true
+  },
+  isBikeOfWeek: {
+    type: Boolean,
+    optional: true
   }
 });
 

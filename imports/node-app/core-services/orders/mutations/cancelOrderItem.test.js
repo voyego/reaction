@@ -734,7 +734,8 @@ test("cancels the order and emits afterOrderCancel if all groups are canceled", 
         workflow: {
           status: "coreOrderWorkflow/canceled",
           workflow: ["new", "coreOrderWorkflow/canceled"]
-        }
+        },
+        "payments.$[].status": "canceled"
       }
     },
     { returnOriginal: false }

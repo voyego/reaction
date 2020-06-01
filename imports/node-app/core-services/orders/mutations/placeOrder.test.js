@@ -63,7 +63,8 @@ test("places an anonymous $0 order with no cartId and no payments", async () => 
     fulfillmentGroups: Factory.orderFulfillmentGroupInputSchema.makeMany(1, {
       items: Factory.orderItemInputSchema.makeMany(1, {
         quantity: 1,
-        price: 0
+        price: 0,
+        hepster: null
       }),
       selectedFulfillmentMethodId,
       totalPrice: 0
@@ -119,6 +120,7 @@ test("places an anonymous $0 order with no cartId and no payments", async () => 
               }
             ],
             createdAt: jasmine.any(Date),
+            hepster: null,
             optionTitle: catalogProductVariant.optionTitle,
             parcel: undefined,
             price: {
