@@ -31,26 +31,14 @@ const inputSchema = new SimpleSchema({
  */
 export default async function sendOrderEmail(context, input) {
   inputSchema.validate(input);
-
   const { action, dataForEmail, fromShop, language, to } = input;
-
-  // Compile email
-  let templateName;
-
-  if (action === "shipped") {
-    templateName = "orders/shipped";
-  } else if (action === "refunded") {
-    templateName = "orders/refunded";
-  } else if (action === "itemRefund") {
-    templateName = "orders/itemRefund";
-  } else {
-    templateName = `orders/${dataForEmail.order.workflow.status}`;
-    await context.mutations.sendEmail(context, {
-      data: dataForEmail,
-      fromShop,
-      templateName,
-      language,
-      to,
-    });
-  }
+  
+  const templateName = `orders/${dataForEmail.order.workflow.status}`;
+  await context.mutations.sendEmail(context, {
+    data: dataForEmail,
+    fromShop,
+    templateName,
+    language,
+    to,
+  });
 }
