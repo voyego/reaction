@@ -32,7 +32,7 @@ function formatDateForEmail(date) {
  * @returns {Object} Data object to use when rendering email templates
  */
 export default async function getDataForOrderEmail(context, { order, action }) {
-  const { collections, getAbsoluteUrl } = context;
+  const { collections, getAbsoluteUrl, getFunctionsOfType } = context;
   const { Shops } = collections;
 
   // Get Shop information
@@ -208,6 +208,9 @@ export default async function getDataForOrderEmail(context, { order, action }) {
     return { ...item, ...attributes, shouldDisplayMileage: shouldDisplayMileage(attributes) }
   }))
 
+  const customGetDataForOrderEmailFuncs = getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
+  const translations = customGetDataForOrderEmailFuncs[0](order.ordererPreferredLanguage)
+
   // Merge data into single object to pass to email template
   return {
     action,
@@ -286,7 +289,8 @@ export default async function getDataForOrderEmail(context, { order, action }) {
       address: shippingAddressForEmail,
       carrier,
       tracking
-    }
+    },
+    translations
   };
 }
 

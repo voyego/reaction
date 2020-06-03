@@ -60,6 +60,13 @@ async function sendResetEmail(userId, optionalEmail, language) {
   const shop = Shops.findOne(Reaction.getShopId());
   const copyrightDate = new Date().getFullYear();
 
+  const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
+  const language = account && account.profile && account.profile.language;
+  const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
+
+  const customDataForAccountsResetPassword = context.getFunctionsOfType('custom/getDataForAccountsResetPassword')
+  const translations = customDataForAccountsResetPassword[0](language)
+
   const dataForEmail = {
     // Shop Data
     shop,
@@ -94,12 +101,10 @@ async function sendResetEmail(userId, optionalEmail, language) {
     },
     // Account Data
     passwordResetUrl: MeteorAccounts.urls.resetPassword(token),
-    user
+    user,
+    translations
   };
 
-  const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
-  const language = account && account.profile && account.profile.language;
-  const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
   return Promise.await(context.mutations.sendEmail(context, {
     data: dataForEmail,
     fromShop: shop,

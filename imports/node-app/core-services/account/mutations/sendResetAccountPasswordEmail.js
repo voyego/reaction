@@ -18,7 +18,7 @@ const inputSchema = new SimpleSchema({
  * @returns {Job} - returns a sendEmail Job instance
  */
 async function sendResetEmail(context, account, email) {
-  const { collections } = context;
+  const { collections, getFunctionsOfType } = context;
   const { Shops, users } = collections;
   // Make sure the user exists, and email is one of their addresses.
   const user = await users.findOne({ _id: account.userId });
@@ -54,6 +54,12 @@ async function sendResetEmail(context, account, email) {
 
   const copyrightDate = new Date().getFullYear();
 
+  // get account profile language for email
+  const language = account.profile && account.profile.language;
+
+  const customDataForAccountsResetPassword = getFunctionsOfType('custom/getDataForAccountsResetPassword')
+  const translations = customDataForAccountsResetPassword[0](language)
+
   const dataForEmail = {
     // Shop Data
     shop,
@@ -88,11 +94,9 @@ async function sendResetEmail(context, account, email) {
     },
     // Account Data
     passwordResetUrl: context.getAbsoluteUrl(`reset-password/${tokenObj.token}`),
-    user
+    user,
+    translations
   };
-
-  // get account profile language for email
-  const language = account.profile && account.profile.language;
 
   return context.mutations.sendEmail(context, {
     data: dataForEmail,

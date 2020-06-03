@@ -16,7 +16,7 @@ import ReactionError from "@reactioncommerce/reaction-error";
  * @returns {Job} - returns a sendEmail Job instance
  */
 export default async function sendVerificationEmail(context, { bodyTemplate = "accounts/verifyEmail", email, shopId, userId }) {
-  const { collections } = context;
+  const { collections, getFunctionsOfType } = context;
   const { Accounts, Shops, users } = collections;
 
   const user = await users.findOne({ _id: userId });
@@ -65,6 +65,11 @@ export default async function sendVerificationEmail(context, { bodyTemplate = "a
   const url = context.getAbsoluteUrl(`#/verify-email/${tokenObj.token}`);
   const copyrightDate = new Date().getFullYear();
 
+  const language = (account.profile && account.profile.language) || shop.language;
+
+  const customGetDataForOrderConfirmationEmail = getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
+  const translations = customGetDataForOrderConfirmationEmail[0](language)
+
   const dataForEmail = {
     // Reaction Information
     contactEmail: _.get(shop, "emails[0].address"),
@@ -98,10 +103,9 @@ export default async function sendVerificationEmail(context, { bodyTemplate = "a
       }
     },
     confirmationUrl: url,
-    userEmailAddress: address
+    userEmailAddress: address,
+    translations
   };
-
-  const language = (account.profile && account.profile.language) || shop.language;
 
   return context.mutations.sendEmail(context, {
     data: dataForEmail,
