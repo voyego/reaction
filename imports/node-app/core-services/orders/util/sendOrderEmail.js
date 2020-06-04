@@ -26,7 +26,7 @@ export default async function sendOrderEmail(context, order, action) {
     Logger.warn("Plugins registered more than one function of type `getDataForOrderEmail`. Using the first one.");
   }
 
-  const dataForEmail = await getDataForOrderEmail(context, { order });
+  const dataForEmail = await getDataForOrderEmail(context, { order, action });
 
   await context.mutations.sendOrderEmail(context, {
     action,

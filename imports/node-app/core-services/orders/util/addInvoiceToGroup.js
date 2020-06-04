@@ -43,6 +43,7 @@ export default function addInvoiceToGroup({
     shipping: fulfillmentTotal,
     subtotal: itemTotal,
     surcharges: groupSurchargeTotal,
+    hepster: hepsterTotal,
     taxableAmount,
     taxes: taxTotal,
     total

@@ -69,6 +69,13 @@ export default async function sendVerificationEmail({
   const url = MeteorAccounts.urls.verifyEmail(token);
   const copyrightDate = new Date().getFullYear();
 
+  const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
+  const language = account && account.profile && account.profile.language;
+  const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
+
+  const customDataForOrderConfirmationEmail = context.getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
+  const translations = customDataForOrderConfirmationEmail[0](language)
+
   const dataForEmail = {
     // Reaction Information
     contactEmail: "hello@reactioncommerce.com",
@@ -98,11 +105,10 @@ export default async function sendVerificationEmail({
       }
     },
     confirmationUrl: url,
-    userEmailAddress: address
+    userEmailAddress: address,
+    translations
   };
-  const account = Accounts.findOne({ userId }, { _id: 0, profile: 1 });
-  const language = account && account.profile && account.profile.language;
-  const context = Promise.await(getGraphQLContextInMeteorMethod(Reaction.getUserId()));
+
   return Promise.await(context.mutations.sendEmail(context, {
     data: dataForEmail,
     fromShopId: Reaction.getShopId(),

@@ -14,6 +14,8 @@ mockContext.queries.getPaymentMethodConfigByName = jest.fn().mockName("getPaymen
   }
 }));
 
+mockContext.getFunctionsOfType = jest.fn().mockName("getFunctionsOfType").mockReturnValue([() => ({})]),
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
