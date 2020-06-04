@@ -130,12 +130,15 @@ export default async function inviteShopMember(context, input) {
   dataForEmail.groupName = _.startCase(group.name);
 
   // send invitation email from primary shop email
+  // IMPORTANT Disable sending this email
+  /*
   await context.mutations.sendEmail(context, {
     data: dataForEmail,
     fromShop: primaryShop,
     templateName,
     to: email
   });
+  */
 
   return Accounts.findOne({ userId });
 }
