@@ -102,6 +102,7 @@ test("places an anonymous $0 order with no cartId and no payments", async () => 
           discounts: 0,
           effectiveTaxRate: 0,
           shipping: 0,
+          hepster: 0,
           subtotal: 0,
           surcharges: 0,
           taxableAmount: 0,
