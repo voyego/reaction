@@ -44,6 +44,7 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   const subtotal = order.shipping.reduce((sum, group) => sum + group.invoice.subtotal, 0);
   const taxes = order.shipping.reduce((sum, group) => sum + group.invoice.taxes, 0);
   const shippingCost = order.shipping.reduce((sum, group) => sum + group.invoice.shipping, 0);
+  const hepster = order.shipping.reduce((sum, group) => sum + group.invoice.hepster, 0);
 
   const { address: shippingAddress, shipmentMethod, tracking } = order.shipping[0];
   const { carrier } = shipmentMethod;
@@ -268,9 +269,10 @@ export default async function getDataForOrderEmail(context, { order, action }) {
       shipping: formatMoney(shippingCost * userCurrencyExchangeRate, userCurrency),
       taxes: formatMoney(taxes * userCurrencyExchangeRate, userCurrency),
       discounts: formatMoney(discounts * userCurrencyExchangeRate, userCurrency),
+      hepster: formatMoney(hepster * userCurrencyExchangeRate, userCurrency),
       refunds: formatMoney(refundTotal * userCurrencyExchangeRate, userCurrency),
       total: formatMoney(
-        (subtotal + shippingCost + taxes - discounts) * userCurrencyExchangeRate,
+        amount,
         userCurrency
       ),
       adjustedTotal: formatMoney(

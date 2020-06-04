@@ -663,6 +663,12 @@ export const OrderInvoice = new SimpleSchema({
     type: Number,
     min: 0
   },
+  hepster: {
+    type: Number,
+    min: 0,
+    optional: true,
+    defaultValue: 0
+  },
   total: {
     type: Number,
     min: 0
