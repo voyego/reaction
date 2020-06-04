@@ -44,7 +44,7 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   const subtotal = order.shipping.reduce((sum, group) => sum + group.invoice.subtotal, 0);
   const taxes = order.shipping.reduce((sum, group) => sum + group.invoice.taxes, 0);
   const shippingCost = order.shipping.reduce((sum, group) => sum + group.invoice.shipping, 0);
-  const hepster = order.shipping.reduce((sum, group) => sum + group.invoice.hepster, 0);
+  const hepster = order.shipping.reduce((sum, group) => sum + group.invoice.hepster || 0, 0);
 
   const { address: shippingAddress, shipmentMethod, tracking } = order.shipping[0];
   const { carrier } = shipmentMethod;
@@ -216,6 +216,7 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   return {
     action,
     shop,
+    hepster,
     contactEmail: shop.emails[0].address,
     homepage: _.get(shop, "storefrontUrls.storefrontHomeUrl", null),
     copyrightDate,
