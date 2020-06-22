@@ -38,9 +38,8 @@ export default async function getDataForEmail(context, options) {
     copyrightDate,
     legalName: _.get(shop, "addressBook[0].company"),
     physicalAddress: {
-      address: `${_.get(shop, "addressBook[0].address1")} ${_.get(shop, "addressBook[0].address2")}`,
+      address: `${_.get(shop, "addressBook[0].address1")}`,
       city: _.get(shop, "addressBook[0].city"),
-      region: _.get(shop, "addressBook[0].region"),
       postal: _.get(shop, "addressBook[0].postal")
     },
     shopName: shop.name,
