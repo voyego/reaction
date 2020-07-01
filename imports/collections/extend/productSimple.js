@@ -260,6 +260,22 @@ const TranslatableFieldsSchema = new SimpleSchema({
   metaDescription: {
     type: String,
     optional: true
+  },
+  bikeOfWeekDiscountText1: {
+    type: String,
+    optional: true
+  },
+  bikeOfWeekDiscountText2: {
+    type: String,
+    optional: true
+  },
+  bikeOfMonthDiscountText1: {
+    type: String,
+    optional: true
+  },
+  bikeOfMonthDiscountText2: {
+    type: String,
+    optional: true
   }
 });
 
