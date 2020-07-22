@@ -34,6 +34,10 @@ const DictionarySchema = new SimpleSchema({
   color: {
     type: String,
     optional: true
+  },
+  mileageGroup: {
+    type: String,
+    optional: true
   }
 });
 
