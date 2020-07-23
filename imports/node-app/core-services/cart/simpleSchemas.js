@@ -698,7 +698,7 @@ const DictionarySchemaVariant = new SimpleSchema({
     type: String,
     optional: true
   },
-  mileageGroup: {
+  milageGroup: {
     type: String,
     optional: true
   }
