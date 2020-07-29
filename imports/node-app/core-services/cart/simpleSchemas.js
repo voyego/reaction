@@ -697,6 +697,10 @@ const DictionarySchemaVariant = new SimpleSchema({
   color: {
     type: String,
     optional: true
+  },
+  milageGroup: {
+    type: String,
+    optional: true
   }
 });
 
@@ -745,6 +749,10 @@ const OptionsSchemaVariant = new SimpleSchema({
     optional: true
   },
   wheelDiameter: {
+    type: String,
+    optional: true
+  },
+  presale: {
     type: String,
     optional: true
   },
@@ -1036,6 +1044,10 @@ export const Cart = new SimpleSchema({
     optional: true
   },
   "deliveryOption": {
+    type: String,
+    optional: true
+  },
+  "deliveryPresaleOption": {
     type: String,
     optional: true
   },

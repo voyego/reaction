@@ -511,6 +511,10 @@ export const Order = new SimpleSchema({
   "customFields.deliveryOption": {
     type: String
   },
+  "customFields.deliveryPresaleOption": {
+    type: String,
+    optional: true
+  },
   "customFields.deliveryShopId": {
     type: String
   },
