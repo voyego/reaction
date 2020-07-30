@@ -14,6 +14,10 @@ const DictionarySchemaVariant = new SimpleSchema({
   color: {
     type: String,
     optional: true
+  },
+  milageGroup: {
+    type: String,
+    optional: true
   }
 });
 /*const SystemSchemaVariant = new SimpleSchema({
