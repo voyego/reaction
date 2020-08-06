@@ -186,9 +186,8 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   const isFailed = isFailedPayment(order);
   const isCanceled = isCanceledPayment(order);
   const isCanceledOrder = isCanceledOrderCheck(order);
-
-
   
+
   let bankDetails = null;
   // TODO: Why do we need bank details in santander manual de?
   if (isInAdvance || isInSantanderManual || isInSantanderManualDe) {
@@ -206,8 +205,12 @@ export default async function getDataForOrderEmail(context, { order, action }) {
     const result = await getAttributes(context, item, order.ordererPreferredLanguage)
     const attributes = R.pick(['productAttributes', 'variantAttributes'], R.pathOr({}, ['0'], result))
 
-    return { ...item, ...attributes, shouldDisplayMileage: shouldDisplayMileage(attributes) }
+    return { ...item, ...attributes, shouldDisplayMileage: shouldDisplayMileage(attributes), shouldDisplayMileageGroup: shouldDisplayMileageGroup(attributes) }
   }))
+
+  const isPresale = isPresaleOrderCheck(itemsWithAttributes);
+  const presaleShippingOption = R.path(['customFields', 'deliveryPresaleOption'], order);
+  const presaleShippingOptionKey = R.path(['0'], presaleShippingOption.split('_'));
 
   const customGetDataForOrderEmailFuncs = getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
   const translations = customGetDataForOrderEmailFuncs[0](order.ordererPreferredLanguage)
@@ -248,7 +251,10 @@ export default async function getDataForOrderEmail(context, { order, action }) {
     order: {
       ...order,
       shipping: adjustedOrderGroups,
-      isCanceledOrder
+      isCanceledOrder,
+      isPresale,
+      presaleShippingOption,
+      presaleShippingOptionKey
     },
     billing: {
       address: billingAddressForEmail,
@@ -298,7 +304,11 @@ export default async function getDataForOrderEmail(context, { order, action }) {
 }
 
 async function shouldDisplayMileage(attributes) {
-  return R.path(['variantAttributes', 'options', 'new'], attributes) === 'false'
+  return R.path(['variantAttributes', 'options', 'new'], attributes) === 'false' && R.path(['variantAttributes', 'options', 'presale'], attributes) === 'false'
+}
+
+async function shouldDisplayMileageGroup(attributes) {
+  return R.path(['variantAttributes', 'options', 'presale'], attributes) === 'true'
 }
 
 async function getAttributes(context, item, lng) {
@@ -337,6 +347,32 @@ async function getAttributes(context, item, lng) {
           }
         ],
         as: 'variantAttributes.dictionary.translatedColor'
+      }
+    },
+    {
+      $lookup: {
+        from: '_integrations_dictionaries',
+        let: { milageGroup: '$variantAttributes.dictionary.milageGroup' }, 
+        pipeline: [
+          { 
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: [ '$$milageGroup', '$originId' ]
+                  },
+                  {
+                    $eq: [ 'milageGroup', '$key' ]
+                  },
+                  {
+                    $eq: [ lng, '$language' ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        as: 'variantAttributes.dictionary.translatedMilageGroup'
       }
     }
   ]).toArray();
@@ -420,4 +456,8 @@ function isCanceledPayment(order) {
 
 function isCanceledOrderCheck(order) {
   return order.workflow.status === "coreOrderWorkflow/canceled";
+}
+
+function isPresaleOrderCheck(itemsWithAttributes) {
+  return R.path(['0', 'variantAttributes', 'options', 'presale'], itemsWithAttributes) === 'true'
 }
