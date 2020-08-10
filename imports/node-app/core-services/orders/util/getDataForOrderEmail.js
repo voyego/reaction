@@ -209,7 +209,7 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   }))
 
   const isPresale = isPresaleOrderCheck(itemsWithAttributes);
-  const presaleShippingOption = R.path(['customFields', 'deliveryPresaleOption'], order);
+  const presaleShippingOption = R.pathOr('', ['customFields', 'deliveryPresaleOption'], order);
   const presaleShippingOptionKey = R.path(['0'], presaleShippingOption.split('_'));
 
   const customGetDataForOrderEmailFuncs = getFunctionsOfType('custom/getDataForOrderConfirmationEmail')
