@@ -304,11 +304,11 @@ export default async function getDataForOrderEmail(context, { order, action }) {
 }
 
 async function shouldDisplayMileage(attributes) {
-  return R.path(['variantAttributes', 'options', 'new'], attributes) === 'false' && R.path(['variantAttributes', 'options', 'presale'], attributes) === 'false'
+  return (R.path(['variantAttributes', 'options', 'new'], attributes) === 'false' && R.path(['variantAttributes', 'options', 'presale'], attributes) === 'false').toString()
 }
 
 async function shouldDisplayMileageGroup(attributes) {
-  return R.path(['variantAttributes', 'options', 'presale'], attributes) === 'true'
+  return (R.path(['variantAttributes', 'options', 'presale'], attributes) === 'true').toString()
 }
 
 async function getAttributes(context, item, lng) {
