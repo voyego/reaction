@@ -303,12 +303,12 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   };
 }
 
-async function shouldDisplayMileage(attributes) {
-  return (R.path(['variantAttributes', 'options', 'new'], attributes) === 'false' && R.path(['variantAttributes', 'options', 'presale'], attributes) === 'false').toString()
+function shouldDisplayMileage(attributes) {
+  return R.path(['variantAttributes', 'options', 'new'], attributes) === 'false' && R.path(['variantAttributes', 'options', 'presale'], attributes) === 'false'
 }
 
-async function shouldDisplayMileageGroup(attributes) {
-  return (R.path(['variantAttributes', 'options', 'presale'], attributes) === 'true').toString()
+function shouldDisplayMileageGroup(attributes) {
+  return R.path(['variantAttributes', 'options', 'presale'], attributes) === 'true'
 }
 
 async function getAttributes(context, item, lng) {
