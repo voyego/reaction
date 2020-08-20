@@ -138,6 +138,10 @@ export const Address = new SimpleSchema({
   houseNumber: {
     type: String,
     optional: true
+  },
+  dateOfBirth: {
+    type: Date,
+    optional: true
   }
 });
 
