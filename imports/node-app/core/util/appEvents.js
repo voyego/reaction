@@ -18,13 +18,7 @@ import Logger from "@reactioncommerce/logger";
 async function synchronousPromiseLoop(name, funcs, args) {
   const func = funcs.shift();
 
-  // One function failing should not prevent others from running,
-  // so catch and log
-  try {
-    await func(...args);
-  } catch (error) {
-    Logger.error(`Error in "${name}" consumer`, error);
-  }
+  await func(...args);
 
   if (funcs.length) {
     await synchronousPromiseLoop(name, funcs, args);
