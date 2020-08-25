@@ -12,7 +12,7 @@ exports[`throws if orderId isn't supplied 1`] = `"Order ID is required"`;
 
 exports[`throws if permission check fails 1`] = `"Access Denied"`;
 
-exports[`throws if the database update fails 1`] = `"queries.getFulfillmentMethodsWithQuotes is not a function"`;
+exports[`throws if the database update fails 1`] = `"Cannot destructure property \`items\` of 'undefined' or 'null'."`;
 
 exports[`throws if the from group would have no items remaining 1`] = `"move would result in group having no items"`;
 
