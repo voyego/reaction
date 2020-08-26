@@ -12,7 +12,7 @@ import { toFixed } from 'accounting-js'
  * @returns {undefined}
  */
 export default function addInvoiceToGroup ({
-  itemsLength,
+  cart,
   currencyCode,
   group,
   groupDiscountTotal,
@@ -30,7 +30,8 @@ export default function addInvoiceToGroup ({
   // Fulfillment
   const shippingTotal = group.shipmentMethod.rate || 0
   const handlingTotal = group.shipmentMethod.handling || 0
-  const fulfillmentTotal = (shippingTotal + handlingTotal) * itemsLength
+  const bikeSum = cart.items.reduce((sum, item) => item.quantity + sum, 0)
+  const fulfillmentTotal = (shippingTotal + handlingTotal) * bikeSum
 
   // Totals
   // To avoid rounding errors, be sure to keep this calculation the same between here and
