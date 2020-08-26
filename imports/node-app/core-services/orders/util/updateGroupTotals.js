@@ -32,7 +32,7 @@ export default async function updateGroupTotals (context, {
   orderId,
   selectedFulfillmentMethodId
 }) {
-  const { items } = await context.collections.Cart.findOne({ _id: cartId })
+  const cart = await context.collections.Cart.findOne({ _id: cartId })
   // Apply shipment method
   await addShipmentMethodToGroup(context, {
     accountId,
@@ -72,7 +72,7 @@ export default async function updateGroupTotals (context, {
 
   // Build and set the group invoice
   addInvoiceToGroup({
-    itemsLength: items.length,
+    cart,
     currencyCode,
     group,
     groupDiscountTotal: discountTotal,

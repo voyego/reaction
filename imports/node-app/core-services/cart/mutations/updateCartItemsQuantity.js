@@ -32,6 +32,7 @@ const inputSchema = new SimpleSchema({
  * @returns {Promise<Object>} An object containing the updated cart in a `cart` property
  */
 export default async function updateCartItemsQuantity(context, input) {
+  const { appEvents } = context
   inputSchema.validate(input || {});
 
   const { cartId, items, token: cartToken } = input;
@@ -64,6 +65,11 @@ export default async function updateCartItemsQuantity(context, input) {
   };
 
   const savedCart = await context.mutations.saveCart(context, updatedCart);
+
+  await appEvents.emit("afterCartUpdate", {
+    cart: savedCart,
+    type: "updateCartItemsQuantity"
+  })
 
   return { cart: savedCart };
 }
