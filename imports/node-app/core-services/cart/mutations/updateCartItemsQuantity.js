@@ -32,7 +32,7 @@ const inputSchema = new SimpleSchema({
  * @returns {Promise<Object>} An object containing the updated cart in a `cart` property
  */
 export default async function updateCartItemsQuantity(context, input) {
-  const { appEvents } = context
+  const { appEvents, collections: { Cart } } = context
   inputSchema.validate(input || {});
 
   const { cartId, items, token: cartToken } = input;
@@ -71,5 +71,7 @@ export default async function updateCartItemsQuantity(context, input) {
     type: "updateCartItemsQuantity"
   })
 
-  return { cart: savedCart };
+  const cartAfterCartUpdate = Cart.findOne({ _id: cart._id })
+
+  return { cart: cartAfterCartUpdate };
 }

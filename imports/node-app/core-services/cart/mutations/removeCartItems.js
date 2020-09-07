@@ -57,5 +57,7 @@ export default async function removeCartItems(context, input) {
     type: "deleteItem"
   })
 
-  return { cart: savedCart };
+  const cartAfterCartUpdate = Cart.findOne({ _id: cart._id })
+
+  return { cart: cartAfterCartUpdate };
 }
