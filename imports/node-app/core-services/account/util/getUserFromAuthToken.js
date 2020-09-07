@@ -23,7 +23,6 @@ async function getUserFromAuthToken(loginToken, context) {
   const tokenObj = await expandAuthToken(token);
 
   if (tokenObj && !tokenObj.active) {
-    Logger.error("Bearer token is not active");
     throw new ReactionError("access-denied", "Token invalid or expired");
   } else if (tokenObj && tokenObj.token_type && tokenObj.token_type !== "access_token") {
     Logger.error("Bearer token is not an access token");
