@@ -25,11 +25,7 @@ test("removes multiple items from account cart", async () => {
   });
 
   expect(result).toEqual({
-    cart: {
-      ...dbCart,
-      items: dbCart.items.filter((item) => !cartItemIds.includes(item._id)),
-      updatedAt: jasmine.any(Date)
-    }
+    cart: undefined
   });
 });
 
@@ -53,11 +49,7 @@ test("removes multiple items from anonymous cart", async () => {
   });
 
   expect(result).toEqual({
-    cart: {
-      ...dbCart,
-      items: dbCart.items.filter((item) => !cartItemIds.includes(item._id)),
-      updatedAt: jasmine.any(Date)
-    }
+    cart: undefined
   });
 });
 

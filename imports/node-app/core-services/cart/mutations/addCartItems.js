@@ -57,5 +57,7 @@ export default async function addCartItems(context, input, options = {}) {
     type: "addItem"
   })
 
-  return { cart: savedCart, incorrectPriceFailures, minOrderQuantityFailures };
+  const cartAfterCartUpdate = Cart.findOne({ _id: cart._id })
+
+  return { cart: cartAfterCartUpdate, incorrectPriceFailures, minOrderQuantityFailures };
 }
