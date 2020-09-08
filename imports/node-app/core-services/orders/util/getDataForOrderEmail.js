@@ -304,11 +304,11 @@ export default async function getDataForOrderEmail(context, { order, action }) {
 }
 
 function shouldDisplayMileage(attributes) {
-  return R.path(['variantAttributes', 'options', 'new'], attributes) === 'false' && R.path(['variantAttributes', 'options', 'presale'], attributes) === 'false'
+  return ['used'].includes(R.path(['variantAttributes', 'options', 'category'], attributes))
 }
 
 function shouldDisplayMileageGroup(attributes) {
-  return R.path(['variantAttributes', 'options', 'presale'], attributes) === 'true'
+  return ['presale_new', 'presale_used'].includes(R.path(['variantAttributes', 'options', 'category'], attributes))
 }
 
 async function getAttributes(context, item, lng) {
@@ -459,5 +459,5 @@ function isCanceledOrderCheck(order) {
 }
 
 function isPresaleOrderCheck(itemsWithAttributes) {
-  return R.path(['0', 'variantAttributes', 'options', 'presale'], itemsWithAttributes) === 'true'
+  return ['presale_new', 'presale_used'].includes(R.path(['0', 'variantAttributes', 'options', 'category'], itemsWithAttributes))
 }
