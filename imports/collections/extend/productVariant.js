@@ -62,6 +62,10 @@ const OptionsSchema = new SimpleSchema({
     type: String,
     optional: true
   },
+  category: {
+    type: String,
+    optional: true
+  },
   presale: {
     type: String,
     optional: true
