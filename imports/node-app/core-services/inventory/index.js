@@ -4,7 +4,6 @@ import schemas from "./schemas/index.js";
 import preStartup from "./utils/preStartup.js";
 import publishProductToCatalog from "./utils/publishProductToCatalog.js";
 import startup from "./utils/startup.js";
-import xformCartItems from "./utils/xformCartItems.js";
 import xformCatalogBooleanFilters from "./utils/xformCatalogBooleanFilters.js";
 import xformCatalogProductVariants from "./utils/xformCatalogProductVariants.js";
 
@@ -22,7 +21,6 @@ export default async function register(app) {
       preStartup: [preStartup],
       publishProductToCatalog: [publishProductToCatalog],
       startup: [startup],
-      xformCartItems: [xformCartItems],
       xformCatalogBooleanFilters: [xformCatalogBooleanFilters],
       xformCatalogProductVariants: [xformCatalogProductVariants]
     },

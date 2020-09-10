@@ -1,4 +1,4 @@
-import ReactionError from "@reactioncommerce/reaction-error";
+import ReactionError from '@reactioncommerce/reaction-error'
 
 /**
  * @name accountCartByAccountId
@@ -11,20 +11,26 @@ import ReactionError from "@reactioncommerce/reaction-error";
  * @param {String} [params.shopId] - A shop ID
  * @returns {Promise<Object>|undefined} A Cart document, if one is found
  */
-export default async function accountCartByAccountId(context, { accountId, shopId } = {}) {
-  const { accountId: contextAccountId, collections, userHasPermission } = context;
-  const { Cart } = collections;
+export default async function accountCartByAccountId (context, { accountId, shopId, language } = {}) {
+  const { accountId: contextAccountId, collections, userHasPermission, getFunctionsOfType } = context
+  const { Cart } = collections
 
-  if (accountId !== contextAccountId && !userHasPermission(["owner", "admin"], shopId)) {
-    throw new ReactionError("access-denied", "Access Denied");
+  if (accountId !== contextAccountId && !userHasPermission(['owner', 'admin'], shopId)) {
+    throw new ReactionError('access-denied', 'Access Denied')
   }
 
   if (!accountId) {
-    throw new ReactionError("invalid-param", "You must provide accountId");
+    throw new ReactionError('invalid-param', 'You must provide accountId')
   }
   if (!shopId) {
-    throw new ReactionError("invalid-param", "You must provide shopId");
+    throw new ReactionError('invalid-param', 'You must provide shopId')
   }
 
-  return Cart.findOne({ accountId, shopId });
+  const cart = await Cart.findOne({ accountId, shopId })
+
+  for (const mutateCart of getFunctionsOfType('xformCartWithLanguage')) {
+    await mutateCart(context, cart, language)
+  }
+
+  return cart
 }
