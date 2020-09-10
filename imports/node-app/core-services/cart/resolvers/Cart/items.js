@@ -1,5 +1,4 @@
 import { orderBy } from "lodash";
-import xformArrayToConnection from "@reactioncommerce/api-utils/graphql/xformArrayToConnection.js";
 import { xformCartItems } from "@reactioncommerce/reaction-graphql-xforms/cart";
 
 /**
@@ -38,10 +37,8 @@ function sortCartItems(cartItems, connectionArgs) {
  */
 export default async function items(cart, connectionArgs, context) {
   let { items: cartItems } = cart;
-  if (!Array.isArray(cartItems) || cartItems.length === 0) return xformArrayToConnection(connectionArgs, []);
-
   // Apply requested sorting
   cartItems = sortCartItems(cartItems, connectionArgs);
 
-  return xformArrayToConnection(connectionArgs, xformCartItems(context, cartItems));
+  return cartItems ? xformCartItems(context, cartItems) : []
 }
