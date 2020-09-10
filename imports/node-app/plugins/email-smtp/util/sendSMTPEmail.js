@@ -12,6 +12,7 @@ import getMailConfig from "./getMailConfig.js";
  * @returns {undefined} Calls one of the callbacks with a return
  */
 export default async function sendSMTPEmail(context, { job, sendEmailCompleted, sendEmailFailed }) {
+  const { MAIL_BCC } = process.env;
   const { to, shopId, ...otherEmailFields } = job.data;
 
   const config = await getMailConfig(context, shopId);
@@ -19,10 +20,14 @@ export default async function sendSMTPEmail(context, { job, sendEmailCompleted, 
     sendEmailFailed(job, "SMTP mail settings not configured");
     return;
   }
-
+  
   Logger.debug(config, "Sending SMTP email with config");
 
   const transport = nodemailer.createTransport(config);
+
+  if (MAIL_BCC) {
+    otherEmailFields.bcc = MAIL_BCC
+  }
 
   transport.sendMail({ to, shopId, ...otherEmailFields }, (error) => {
     if (error) {
