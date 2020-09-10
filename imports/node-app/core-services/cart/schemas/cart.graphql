@@ -234,6 +234,8 @@ extend type Query {
     an anonymous cart and should be stored securely in storefront client storage.
     """
     token: String!
+
+    language: String!
   ): Cart
 
   # Access control should ensure that only authenticated users can find their own
@@ -246,6 +248,8 @@ extend type Query {
 
     "Shop that owns the cart"
     shopId: ID!
+
+    language: String!
   ): Cart
 }
 
