@@ -1,5 +1,5 @@
-import hashToken from '@reactioncommerce/api-utils/hashToken.js'
-import ReactionError from '@reactioncommerce/reaction-error'
+import hashToken from "@reactioncommerce/api-utils/hashToken.js";
+import ReactionError from "@reactioncommerce/reaction-error";
 
 /**
  * @name anonymousCartByCartId
@@ -12,22 +12,16 @@ import ReactionError from '@reactioncommerce/reaction-error'
  * @param {String} [params.token] - Anonymous cart token
  * @returns {Promise<Object>|undefined} - A Cart document, if one is found
  */
-export default async function anonymousCartByCartId (context, { cartId, token, language } = {}) {
-  const { collections, getFunctionsOfType } = context
-  const { Cart } = collections
+export default async function anonymousCartByCartId(context, { cartId, token } = {}) {
+  const { collections } = context;
+  const { Cart } = collections;
 
   if (!cartId) {
-    throw new ReactionError('invalid-param', 'You must provide a cartId')
+    throw new ReactionError("invalid-param", "You must provide a cartId");
   }
 
-  const cart = await Cart.findOne({
+  return Cart.findOne({
     _id: cartId,
     anonymousAccessToken: hashToken(token)
-  })
-
-  for (const mutateCart of getFunctionsOfType('xformCartWithLanguage')) {
-    await mutateCart(context, cart, language)
-  }
-
-  return cart
+  });
 }

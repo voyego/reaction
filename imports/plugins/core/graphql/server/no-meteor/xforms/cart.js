@@ -57,13 +57,13 @@ async function xformCartItem(context, cartItem) {
  * @param {Object[]} items Array of CartItem
  * @returns {Object[]} Same array with GraphQL-only props added
  */
-export async function xformCartItems(context, items) {
+export async function xformCartItems(context, items, connectionArgs) {
   const { getFunctionsOfType } = context;
 
   const xformedItems = await Promise.all(items.map((item) => xformCartItem(context, item)));
 
   for (const mutateItems of getFunctionsOfType("xformCartItems")) {
-    await mutateItems(context, xformedItems); // eslint-disable-line no-await-in-loop
+    await mutateItems(context, xformedItems, connectionArgs); // eslint-disable-line no-await-in-loop
   }
 
   return xformedItems;

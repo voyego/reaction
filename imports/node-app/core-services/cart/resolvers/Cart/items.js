@@ -40,5 +40,5 @@ export default async function items(cart, connectionArgs, context) {
   // Apply requested sorting
   cartItems = sortCartItems(cartItems, connectionArgs);
 
-  return cartItems ? xformCartItems(context, cartItems) : []
+  return cartItems ? xformCartItems(context, cartItems, connectionArgs) : []
 }
