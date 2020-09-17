@@ -1,4 +1,4 @@
-import SimpleSchema from "simpl-schema";
+import SimpleSchema from 'simpl-schema'
 
 const SystemSchema = new SimpleSchema({
   originId: {
@@ -24,7 +24,7 @@ const SystemSchema = new SimpleSchema({
     type: Number,
     defaultValue: 0
   }
-});
+})
 
 const DictionarySchema = new SimpleSchema({
   condition: {
@@ -39,7 +39,7 @@ const DictionarySchema = new SimpleSchema({
     type: String,
     optional: true
   }
-});
+})
 
 const OptionsSchema = new SimpleSchema({
   new: {
@@ -47,6 +47,10 @@ const OptionsSchema = new SimpleSchema({
     optional: true
   },
   code: {
+    type: String,
+    optional: true
+  },
+  ean: {
     type: String,
     optional: true
   },
@@ -78,27 +82,27 @@ const OptionsSchema = new SimpleSchema({
     type: Array,
     optional: true
   },
-  "images.$": {
+  'images.$': {
     type: Object,
     optional: true
   },
-  "images.$.thumbnail": {
+  'images.$.thumbnail': {
     type: String,
     optional: true
   },
-  "images.$.small": {
+  'images.$.small': {
     type: String,
     optional: true
   },
-  "images.$.medium": {
+  'images.$.medium': {
     type: String,
     optional: true
   },
-  "images.$.original": {
+  'images.$.original': {
     type: String,
     optional: true
   }
-});
+})
 
 export const AttributesSchema = new SimpleSchema({
   system: {
@@ -113,4 +117,4 @@ export const AttributesSchema = new SimpleSchema({
     type: OptionsSchema,
     optional: true
   }
-});
+})
