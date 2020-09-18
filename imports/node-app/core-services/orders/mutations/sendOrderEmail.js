@@ -31,6 +31,7 @@ const inputSchema = new SimpleSchema({
  */
 export default async function sendOrderEmail(context, input) {
   inputSchema.validate(input);
+  
   const { action, dataForEmail, fromShop, language, to } = input;
   
   const templateName = action === 'new' ? 'orders/new' : 'orders/update';
