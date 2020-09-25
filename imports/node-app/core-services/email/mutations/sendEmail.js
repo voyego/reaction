@@ -78,7 +78,9 @@ export default async function sendEmail(context, options) {
     });
     jobData.html = html;
     jobData.subject = subject;
-    jobData.orderId = options.data.order._id;
+    if (options.data.order) {
+      jobData.orderId = options.data.order._id;
+    }
   }
 
   return backgroundJobs.scheduleJob({
