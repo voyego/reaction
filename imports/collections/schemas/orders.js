@@ -559,6 +559,10 @@ export const Order = new SimpleSchema({
     type: String,
     optional: true
   },
+  "emailReminder": {
+    type: String,
+    optional: true
+  },
   "payments": {
     type: Array,
     optional: true

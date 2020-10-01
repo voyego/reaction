@@ -589,6 +589,8 @@ type Order implements Node {
 
   "Language in which order was placed"
   ordererPreferredLanguage: String
+
+  emailReminder: String
 }
 
 "A note about an order"
@@ -747,6 +749,8 @@ input OrderInput {
   language will be used.
   """
   ordererPreferredLanguage: String!
+  
+  emailReminder: String
 }
 
 "Input for adding order payments"
