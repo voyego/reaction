@@ -236,6 +236,10 @@ export const orderInputSchema = new SimpleSchema({
     type: String,
     optional: true
   },
+  "emailReminder": {
+    type: String,
+    optional: true
+  },
   "shopId": String
 });
 
