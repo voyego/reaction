@@ -16,6 +16,10 @@ const inputSchema = new SimpleSchema({
   status: {
     type: String,
     optional: true
+  },
+  emailReminder: {
+    type: String,
+    optional: true
   }
 });
 
@@ -34,7 +38,8 @@ export default async function updateOrder(context, input) {
     customFields,
     email,
     orderId,
-    status
+    status,
+    emailReminder
   } = input;
 
   const { appEvents, collections, isInternalCall, userHasPermission, userId } = context;
@@ -67,6 +72,7 @@ export default async function updateOrder(context, input) {
       "workflow.workflow": status
     };
   }
+  if (emailReminder) modifier.$set.emailReminder = emailReminder;
 
   // Skip updating if we have no updates to make
   if (Object.keys(modifier.$set).length === 1) return { order };
