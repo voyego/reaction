@@ -237,7 +237,7 @@ export const orderInputSchema = new SimpleSchema({
     optional: true
   },
   "emailReminder": {
-    type: String,
+    type: Boolean,
     optional: true
   },
   "shopId": String

@@ -560,7 +560,7 @@ export const Order = new SimpleSchema({
     optional: true
   },
   "emailReminder": {
-    type: String,
+    type: Boolean,
     optional: true
   },
   "payments": {

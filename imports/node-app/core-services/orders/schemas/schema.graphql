@@ -590,7 +590,7 @@ type Order implements Node {
   "Language in which order was placed"
   ordererPreferredLanguage: String
 
-  emailReminder: String
+  emailReminder: Boolean
 }
 
 "A note about an order"
@@ -750,7 +750,7 @@ input OrderInput {
   """
   ordererPreferredLanguage: String!
   
-  emailReminder: String
+  emailReminder: Boolean
 }
 
 "Input for adding order payments"
