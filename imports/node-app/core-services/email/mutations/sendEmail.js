@@ -78,6 +78,7 @@ export default async function sendEmail(context, options) {
     });
     jobData.html = html;
     jobData.subject = subject;
+    jobData.template = options.templateName;
     if (options.data.order) {
       jobData.orderId = options.data.order._id;
     }
