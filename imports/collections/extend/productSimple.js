@@ -7,6 +7,9 @@ const SystemSchema = new SimpleSchema({
   weight: {
     type: String
   },
+  category: {
+    type: Number
+  },
   priority: {
     type: Number,
     optional: true
