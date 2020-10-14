@@ -8,7 +8,8 @@ const SystemSchema = new SimpleSchema({
     type: String
   },
   category: {
-    type: Number
+    type: Number,
+    optional: true
   },
   priority: {
     type: Number,
