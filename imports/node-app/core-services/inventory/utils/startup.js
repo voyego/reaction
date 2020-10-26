@@ -6,15 +6,30 @@
  */
 export default function startup(context) {
   const { appEvents, collections } = context;
-  const { SimpleInventory, Products } = collections;
+  const { SimpleInventory, Products, Catalog } = collections;
 
   // Whenever inventory is updated for any sellable variant, the plugin that did the update is
   // expected to emit `afterInventoryUpdate`. We listen for this and keep the boolean fields
   // on the CatalogProduct correct.
-  appEvents.on("afterInventoryUpdate", async ({ productConfiguration }) => {
-    const simpleInventory = await SimpleInventory.findOne({ "productConfiguration.productVariantId": productConfiguration.productVariantId })
-    await Products.updateOne({ _id: productConfiguration.productId }, { $set: { "attributes.system.inventoryInStock": simpleInventory.attributes.system.inventoryInStock }})
-    context.mutations.partialProductPublish(context, { productId: productConfiguration.productId, startFrom: "inventory" })
+  appEvents.on("afterInventoryUpdate", async ({ productConfiguration: { productVariantId, productId } }) => {
+    const { inventoryInStock } = await SimpleInventory.findOne({ "productConfiguration.productVariantId": productVariantId })
+    await Products.updateOne({ _id: productVariantId }, { $set: { "attributes.system.inventoryInStock": inventoryInStock }})
+    await Catalog.updateOne(
+      { "product.productId": productId }, 
+      { $set: 
+        { 
+          "product.variants.$[variant].attributes.system.inventoryInStock": inventoryInStock 
+        } 
+      },
+      {
+        arrayFilters: [
+          {
+            "variant.variantId": productVariantId 
+          }
+        ]
+      }
+    )
+    context.mutations.partialProductPublish(context, { productId: productId, startFrom: "inventory" })
   })
 
   appEvents.on("afterBulkInventoryUpdate", async ({ productConfigurations }) => {
