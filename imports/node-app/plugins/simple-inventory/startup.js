@@ -30,20 +30,39 @@ export default function startup(context) {
 
     const bulkWriteOperations = [];
 
-    allOrderItems.forEach((item) => {
-      bulkWriteOperations.push({
-        updateOne: {
-          filter: {
-            "productConfiguration.productVariantId": item.variantId
-          },
-          update: {
-            $inc: {
-              inventoryInStock: item.quantity
+    // If order is approved, the inventory has been taken away from `inventoryInStock`
+    if (returnToStock && isOrderComplete) {
+      allOrderItems.forEach((item) => {
+        bulkWriteOperations.push({
+          updateOne: {
+            filter: {
+              "productConfiguration.productVariantId": item.variantId
+            },
+            update: {
+              $inc: {
+                inventoryInStock: item.quantity
+              }
             }
           }
-        }
+        });
       });
-    });
+    } else if (!isOrderComplete) {
+      // If order is not complete, the inventory hasn't been taken away from `inventoryInStock` yet but is in `inventoryReserved`
+      allOrderItems.forEach((item) => {
+        bulkWriteOperations.push({
+          updateOne: {
+            filter: {
+              "productConfiguration.productVariantId": item.variantId
+            },
+            update: {
+              $inc: {
+                inventoryReserved: -item.quantity
+              }
+            }
+          }
+        });
+      });
+    }
 
     if (bulkWriteOperations.length === 0) return;
 
@@ -74,7 +93,7 @@ export default function startup(context) {
         },
         update: {
           $inc: {
-            inventoryInStock: - item.quantity
+            inventoryReserved: item.quantity
           }
         }
       }
@@ -98,11 +117,9 @@ export default function startup(context) {
         Logger.error(error, "Bulk write error in simple-inventory afterOrderCreate listener");
       });
   });
-  
-  // TODO: Does nothing. Can be removed at a later date.
+
+  // TODO: When the approval step is removed, change this to afterFulfillmentGroupPacked
   appEvents.on("afterOrderApprovePayment", async ({ order }) => {
-    Logger.error({ message: 'afterOrderApproved called' })
-    /*
     // We only decrease the inventory quantity after the final payment is approved
     if (!orderIsComplete(order)) return;
 
@@ -139,6 +156,5 @@ export default function startup(context) {
       .catch((error) => {
         Logger.error(error, "Bulk write error in simple-inventory afterOrderApprovePayment listener");
       });
-    */
   });
 }
