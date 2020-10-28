@@ -1,4 +1,3 @@
-import Logger from "@reactioncommerce/logger";
 /**
  * @summary Called on startup
  * @param {Object} context Startup context
@@ -7,15 +6,31 @@ import Logger from "@reactioncommerce/logger";
  */
 export default function startup(context) {
   const { appEvents, collections } = context;
-  const { Catalog, Products } = collections;
-  const { PRODUCT_LOW_INVENTORY_THRESHOLD } = process.env;
-  const DEFAULT_LOW_INVENTORY_THRESHOLD = 10;
+  const { SimpleInventory, Products, Catalog } = collections;
 
   // Whenever inventory is updated for any sellable variant, the plugin that did the update is
   // expected to emit `afterInventoryUpdate`. We listen for this and keep the boolean fields
   // on the CatalogProduct correct.
-  appEvents.on("afterInventoryUpdate", async ({ productConfiguration }) =>
-    context.mutations.partialProductPublish(context, { productId: productConfiguration.productId, startFrom: "inventory" }));
+  appEvents.on("afterInventoryUpdate", async ({ productConfiguration: { productVariantId, productId } }) => {
+    const { inventoryInStock } = await SimpleInventory.findOne({ "productConfiguration.productVariantId": productVariantId })
+    await Products.updateOne({ _id: productVariantId }, { $set: { "attributes.system.inventoryInStock": inventoryInStock }})
+    await Catalog.updateOne(
+      { "product.productId": productId }, 
+      { $set: 
+        { 
+          "product.variants.$[variant].attributes.system.inventoryInStock": inventoryInStock 
+        } 
+      },
+      {
+        arrayFilters: [
+          {
+            "variant.variantId": productVariantId 
+          }
+        ]
+      }
+    )
+    context.mutations.partialProductPublish(context, { productId: productId, startFrom: "inventory" })
+  })
 
   appEvents.on("afterBulkInventoryUpdate", async ({ productConfigurations }) => {
     // Since it is a bulk update and many of the product configurations may be for the same
@@ -30,7 +45,7 @@ export default function startup(context) {
     uniqueProductIds.forEach((productId) => {
       context.mutations.partialProductPublish(context, { productId, startFrom: "inventory" });
     });
-/* TODO voyego: move this to partialProductPublish
+    /* TODO voyego: move this to partialProductPublish
     const variants = await Products.find(
       {
         ancestors: productId,
