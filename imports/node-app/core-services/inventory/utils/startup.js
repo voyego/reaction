@@ -29,7 +29,7 @@ export default function startup(context) {
         ]
       }
     )
-    context.mutations.partialProductPublish(context, { productId: productId, startFrom: "inventory" })
+    await context.mutations.partialProductPublish(context, { productId: productId, startFrom: "inventory" })
   })
 
   appEvents.on("afterBulkInventoryUpdate", async ({ productConfigurations }) => {

@@ -48,17 +48,17 @@ export default function startup(context) {
     if (bulkWriteOperations.length === 0) return;
 
     await SimpleInventory.bulkWrite(bulkWriteOperations, { ordered: false })
-      .then(() => (
-        Promise.all(allOrderItems.map((item) => (
-          appEvents.emit("afterInventoryUpdate", {
+      .then(async () => {
+        for (const item of allOrderItems) {
+          await appEvents.emit("afterInventoryUpdate", {
             productConfiguration: {
               productId: item.productId,
               productVariantId: item.variantId
             },
             updatedBy: null
           })
-        )))
-      ))
+        }
+      })
       .catch((error) => {
         Logger.error(error, "Bulk write error in simple-inventory afterOrderCancel listener");
       });
@@ -83,17 +83,17 @@ export default function startup(context) {
     if (bulkWriteOperations.length === 0) return;
 
     await SimpleInventory.bulkWrite(bulkWriteOperations, { ordered: false })
-      .then(() => (
-        Promise.all(allOrderItems.map((item) => (
-          appEvents.emit("afterInventoryUpdate", {
+      .then(async () => {
+        for (const item of allOrderItems) {
+          await appEvents.emit("afterInventoryUpdate", {
             productConfiguration: {
               productId: item.productId,
               productVariantId: item.variantId
             },
             updatedBy: null
           })
-        )))
-      ))
+        }
+      })
       .catch((error) => {
         Logger.error(error, "Bulk write error in simple-inventory afterOrderCreate listener");
       });
