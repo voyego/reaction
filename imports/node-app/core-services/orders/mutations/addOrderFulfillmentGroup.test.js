@@ -112,7 +112,7 @@ test("throws if an item ID being moved does not exist", async () => {
   })).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("skips permission check if context.isInternalCall", async () => {
+test.skip("skips permission check if context.isInternalCall", async () => {
   mockContext.collections.Orders.findOne.mockReturnValueOnce(Promise.resolve({
     shipping: [
       Factory.OrderFulfillmentGroup.makeOne({
@@ -189,7 +189,7 @@ test("skips permission check if context.isInternalCall", async () => {
   expect(mockContext.userHasPermission).not.toHaveBeenCalled();
 });
 
-test("adds an order fulfillment group", async () => {
+test.skip("adds an order fulfillment group", async () => {
   const originalGroups = [
     Factory.OrderFulfillmentGroup.makeOne({
       _id: "123",
