@@ -1,4 +1,6 @@
 import SimpleSchema from "simpl-schema";
+import { AttributesSchema as AttributesSimpleSchema } from "../../../collections/extend/productSimple"
+import { AttributesSchema as AttributesVariantSchema } from "../../../collections/extend/productVariant"
 
 const withoutCodeCountries = ["AO", "AG", "AW", "BS", "BZ", "BJ", "BW",
   "BF", "BI", "CM", "CF", "KM", "CG", "CD", "CK", "CI", "DJ",
@@ -786,6 +788,14 @@ export const OrderItem = new SimpleSchema({
   "addedAt": Date,
   "attributes": {
     type: Array,
+    optional: true
+  },
+  "productAttributes": {
+    type: AttributesSimpleSchema,
+    optional: true
+  },
+  "variantAttributes": {
+    type: AttributesVariantSchema,
     optional: true
   },
   "attributes.$": OrderItemAttribute,
