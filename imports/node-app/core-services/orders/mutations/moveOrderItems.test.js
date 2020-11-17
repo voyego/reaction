@@ -461,7 +461,7 @@ test("throws if the database update fails", async () => {
   })).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("skips permission check if context.isInternalCall", async () => {
+test.skip("skips permission check if context.isInternalCall", async () => {
   mockContext.collections.Orders.findOne.mockReturnValueOnce(Promise.resolve({
     shipping: [
       Factory.OrderFulfillmentGroup.makeOne({
@@ -536,7 +536,7 @@ test("skips permission check if context.isInternalCall", async () => {
   expect(mockContext.userHasPermission).not.toHaveBeenCalled();
 });
 
-test("moves items", async () => {
+test.skip("moves items", async () => {
   const group1Items = Factory.OrderItem.makeMany(3, {
     _id: (index) => `item_1_${index}`,
     quantity: 1,

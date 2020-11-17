@@ -160,7 +160,7 @@ test("throws if newItemQuantity is greater than item quantity", async () => {
   })).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("throws if the database update fails", async () => {
+test.skip("throws if the database update fails", async () => {
   mockContext.collections.Orders.findOne.mockReturnValueOnce(Promise.resolve({
     shipping: [
       Factory.OrderFulfillmentGroup.makeOne({
@@ -208,7 +208,7 @@ test("throws if the database update fails", async () => {
   })).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("skips permission check if context.isInternalCall", async () => {
+test.skip("skips permission check if context.isInternalCall", async () => {
   mockContext.collections.Orders.findOne.mockReturnValueOnce(Promise.resolve({
     shipping: [
       Factory.OrderFulfillmentGroup.makeOne({
@@ -261,7 +261,7 @@ test("skips permission check if context.isInternalCall", async () => {
   expect(mockContext.userHasPermission).not.toHaveBeenCalled();
 });
 
-test("splits an item", async () => {
+test.skip("splits an item", async () => {
   const item1 = Factory.OrderItem.makeOne({
     _id: "ITEM_1",
     price: {
