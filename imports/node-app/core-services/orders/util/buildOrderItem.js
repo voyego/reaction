@@ -69,6 +69,8 @@ export default async function buildOrderItem(context, { currencyCode, inputItem 
     _id: Random.id(),
     addedAt: addedAt || now,
     attributes,
+    productAttributes: chosenProduct.attributes,
+    variantAttributes: chosenVariant.attributes,
     hepster,
     createdAt: now,
     optionTitle: chosenVariant && chosenVariant.optionTitle,
