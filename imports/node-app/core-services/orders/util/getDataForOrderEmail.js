@@ -218,6 +218,7 @@ export default async function getDataForOrderEmail(context, { order, action }) {
   // Merge data into single object to pass to email template
   return {
     action,
+    isOrderStatusCancelAction: action === "orderStatusCancel",
     shop,
     hepster,
     contactEmail: shop.emails[0].address,
